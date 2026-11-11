@@ -14,6 +14,24 @@ const models = {
 const loaded = new Map()
 let folderFiles = []
 
+function updateContext() {
+  $('active-project').textContent = $('project').selectedOptions[0]?.textContent || 'Your project'
+  $('active-model').textContent = $('model').selectedOptions[0]?.textContent || 'E5 multilingual'
+}
+
+function resetSearch() {
+  updateContext()
+  $('results').replaceChildren()
+  $('search-empty').hidden = false
+  $('result-count').textContent = 'Ready to explore'
+  $('search-status').textContent = 'Ask a question to explore this project’s indexed source.'
+}
+
+function setProgress(value) {
+  $('progress-fill').style.width = `${value}%`
+  $('progress-fill').parentElement.setAttribute('aria-valuenow', String(value))
+}
+
 async function api(path, body) {
   const response = await fetch('/api/' + path, body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {})
   const data = await response.json()
@@ -32,6 +50,7 @@ async function refreshProjects() {
     $('project').append(option)
   }
   if (current) $('project').value = current
+  updateContext()
   if (!data.projects.length) {
     await api('projects', {name: 'My project'})
     await refreshProjects()
@@ -67,7 +86,7 @@ async function saveItems(items) {
     const batch = items.slice(offset, offset + 8)
     await api('ingest', {project: $('project').value, model: $('model').value, items: batch})
     saved += batch.length
-    $('progress-fill').style.width = `${Math.round(100 * saved / items.length)}%`
+    setProgress(Math.round(100 * saved / items.length))
     $('ingest-status').textContent = `${saved} of ${items.length} passages saved to Chroma`
   }
 }
@@ -79,6 +98,7 @@ $('new-project').onclick = async () => {
     const project = await api('projects', {name})
     await refreshProjects()
     $('project').value = project.id
+    resetSearch()
   } catch (error) { $('ingest-status').textContent = error.message }
 }
 
@@ -116,7 +136,7 @@ $('ingest').onclick = async () => {
   $('ingest').disabled = true
   $('model').disabled = true
   $('project').disabled = true
-  $('progress-fill').style.width = '0'
+  setProgress(0)
   try {
     const pending = []
     let saved = 0
@@ -134,7 +154,7 @@ $('ingest').onclick = async () => {
         }
       }
       processed++
-      $('progress-fill').style.width = `${Math.round(100 * processed / total)}%`
+      setProgress(Math.round(100 * processed / total))
     }
     for (const file of files) {
       $('ingest-status').textContent = `Reading ${file.name}…`
@@ -179,36 +199,72 @@ $('vectors').onchange = async () => {
 
 $('search').onclick = async () => {
   const query = $('query').value.trim()
-  if (!query) return
+  if (!query) { $('query').focus(); return }
   $('search').disabled = true
   $('model').disabled = true
   $('project').disabled = true
   $('results').replaceChildren()
+  $('search-empty').hidden = true
+  $('result-count').textContent = 'Searching…'
   $('search-status').textContent = 'Embedding query and searching Chroma…'
   try {
     const vector = await embed(query, 'query')
     const data = await api('search', {project: $('project').value, model: $('model').value, vector, limit: 8})
-    $('search-status').textContent = data.hits.length ? `${data.hits.length} relevant passages` : 'No passages found in this project and model.'
-    for (const hit of data.hits) {
+    $('result-count').textContent = `${data.hits.length} ${data.hits.length === 1 ? 'passage' : 'passages'}`
+    $('search-status').textContent = data.hits.length ? `Showing source passages for “${query}”` : 'No passages found in this project and model. Add source in the workspace, or try another model.'
+    for (const [index, hit] of data.hits.entries()) {
       const card = document.createElement('article')
       card.className = 'hit'
-      const top = document.createElement('div')
-      top.className = 'hit-top'
-      const cite = document.createElement('strong')
-      cite.className = 'cite'
-      cite.textContent = hit.citation
-      const score = document.createElement('span')
-      score.className = 'score'
-      score.textContent = `distance ${Number(hit.distance).toFixed(3)}`
+      const head = document.createElement('div')
+      head.className = 'hit-head'
+      const rank = document.createElement('span')
+      rank.className = 'hit-index'
+      rank.textContent = String(index + 1).padStart(2, '0')
+      const locator = document.createElement('div')
+      locator.className = 'hit-locator'
+      const path = document.createElement('strong')
+      path.className = 'hit-path'
+      path.textContent = hit.citation
+      const meta = document.createElement('span')
+      meta.className = 'hit-meta'
+      meta.textContent = `Source passage · line ${hit.line || String(hit.citation).split(':').pop()}`
+      const copy = document.createElement('button')
+      copy.className = 'copy-cite'
+      copy.type = 'button'
+      copy.textContent = 'Copy citation'
+      copy.setAttribute('aria-label', `Copy citation ${hit.citation}`)
+      copy.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(hit.citation)
+          copy.textContent = 'Copied'
+        } catch (error) { copy.textContent = 'Copy failed' }
+      }
+      const code = document.createElement('div')
+      code.className = 'hit-code'
+      const gutter = document.createElement('pre')
+      gutter.className = 'line-gutter'
+      gutter.setAttribute('aria-hidden', 'true')
+      const firstLine = Number(hit.line) || Number(String(hit.citation).split(':').pop()) || 1
+      gutter.textContent = String(hit.text).split('\n').map((_, offset) => firstLine + offset).join('\n')
       const snippet = document.createElement('pre')
       snippet.textContent = hit.text
-      top.append(cite, score)
-      card.append(top, snippet)
+      locator.append(path, meta)
+      head.append(rank, locator, copy)
+      code.append(gutter, snippet)
+      const foot = document.createElement('div')
+      foot.className = 'hit-footer'
+      foot.textContent = `Semantic distance ${Number(hit.distance).toFixed(3)} · lower is closer`
+      card.append(head, code, foot)
       $('results').append(card)
     }
-  } catch (error) { $('search-status').textContent = error.message }
+  } catch (error) { $('result-count').textContent = 'Search failed'; $('search-status').textContent = error.message }
   finally { $('search').disabled = false; $('model').disabled = false; $('project').disabled = false }
 }
 
 $('query').onkeydown = event => { if (event.key === 'Enter') $('search').click() }
+$('project').onchange = resetSearch
+$('model').onchange = resetSearch
+for (const example of document.querySelectorAll('[data-example]')) {
+  example.onclick = () => { $('query').value = example.dataset.example; $('search').click() }
+}
 refreshProjects().catch(error => { $('ingest-status').textContent = error.message })
