@@ -1,6 +1,6 @@
 # Source Atlas for Android
 
-This APK embeds multilingual E5 small and MiniLM L6 v2, runs a localhost RAG retrieval API, and stores project collections with the official Chroma Android library. It works without a network connection after installation. The Chroma store is private to the app at `app_chroma/`; Chroma Android creates `chroma_metadata.db` and index directories there. The app does not create a separate SQLite output database.
+This APK embeds multilingual E5 small and MiniLM L6 v2, runs a localhost RAG retrieval API in an Android foreground service, and stores project collections with the official Chroma Android library. It works without a network connection after installation. The Chroma store is private to the app at `app_chroma/`; Chroma Android creates `chroma_metadata.db` and index directories there. The app does not create a separate SQLite output database.
 
 The interface imports selected text files, a source folder with relative paths, existing 384 dimensional vectors in JSONL, or the bundled app source corpus. It chunks source by line, embeds passages with the selected model, and returns citations such as `src/tools/BashTool/bashSecurity.ts:1459`. E5 uses `passage:` for source and `query:` for search. Each project has separate Chroma collections for E5 and MiniLM.
 
@@ -24,7 +24,7 @@ The Chroma Android beta AAR currently contains ARM64 native libraries. Its 0.0.1
 
 ## Local RAG API
 
-The API listens on `127.0.0.1:8765` while the app is open. It accepts JSON and returns JSON.
+The API listens on `127.0.0.1:8765` after the app is opened. The foreground service owns the listener and Chroma client, so the API remains available when the screen closes or the app moves to the background. Its ongoing notification opens the app. Android may restart the sticky service after process reclamation; force stopping the app or stopping it through Android's running services controls ends it until the app is opened again. It accepts JSON and returns JSON.
 
 | Method | Path | Purpose |
 | --- | --- | --- |

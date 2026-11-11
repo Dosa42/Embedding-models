@@ -1,26 +1,42 @@
 package com.ayrvokan.embeddingmodels
 
 import android.app.Activity
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Build
+import android.os.IBinder
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.net.Uri
 import android.webkit.JavascriptInterface
-import kotlin.concurrent.thread
+import org.json.JSONObject
 
 class MainActivity : Activity() {
-    private lateinit var server: RagServer
     private lateinit var web: WebView
     private var fileCallback: ValueCallback<Array<Uri>>? = null
+    private var service: RagService? = null
+    private var bound = false
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+            service = (binder as RagService.LocalBinder).service
+            web.loadUrl("http://127.0.0.1:8765/")
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            service = null
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        server = RagServer(this)
-        server.start()
         if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) WebView.setWebContentsDebuggingEnabled(true)
         web = WebView(this)
         web.settings.javaScriptEnabled = true
@@ -46,16 +62,22 @@ class MainActivity : Activity() {
             }
         }
         setContentView(web)
-        web.loadUrl("http://127.0.0.1:8765/")
+        val intent = Intent(this, RagService::class.java)
+        startForegroundService(intent)
+        bound = bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 812)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 811) {
             if (resultCode == RESULT_OK) data?.data?.let {
-                thread {
-                    server.selectTree(it)
-                    runOnUiThread { web.evaluateJavascript("window.onFolderReady()", null) }
+                try { contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION) } catch (_: SecurityException) { }
+                service?.selectTree(it) { error ->
+                    if (error == null) web.evaluateJavascript("window.onFolderReady()", null)
+                    else web.evaluateJavascript("document.getElementById('selected').textContent = ${JSONObject.quote(error)}", null)
                 }
             }
             return
@@ -70,7 +92,8 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
-        server.close()
+        if (bound) unbindService(connection)
+        web.destroy()
         super.onDestroy()
     }
 }
