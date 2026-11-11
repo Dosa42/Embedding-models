@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source Atlas</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div class="shell">
+<header class="top"><div class="brand"><span class="mark">◈</span><div><strong>Source Atlas</strong><small>Offline embeddings · local Chroma RAG</small></div></div><span class="local">● On device</span></header>
+<main>
+<section class="hero"><span class="eyebrow">YOUR CODE, WITH CONTEXT</span><h1>Find the right line.</h1><p>Import source files, organize them by project, and search by meaning. Every answer points back to its file and line.</p></section>
+<div class="grid">
+<section class="panel setup"><div class="heading"><span class="number">01</span><div><h2>Workspace</h2><p>Choose a project and embedding model.</p></div></div><label for="project">Project</label><div class="inline"><select id="project"></select><button id="new-project" class="subtle">＋ New</button></div><label for="model">Model</label><select id="model"><option value="e5">Multilingual E5 small · 384d</option><option value="minilm">MiniLM L6 v2 · 384d</option></select><div class="note">Projects keep separate Chroma collections for each model.</div></section>
+<section class="panel ingest"><div class="heading"><span class="number">02</span><div><h2>Add knowledge</h2><p>Text and source files, with line numbers.</p></div></div><label class="drop" for="files"><span class="drop-icon">↥</span><strong>Choose files</strong><small>.ts, .tsx, .js, .py, .md and other text</small></label><input id="files" type="file" multiple><div class="import-row"><button id="folder" class="subtle">Choose source folder</button><button id="corpus" class="subtle">Use bundled corpus</button></div><div id="selected" class="selected">No files selected</div><button id="ingest" class="primary">Embed & save to Chroma</button><label class="vector-label" for="vectors">Or import existing vectors (.jsonl)</label><input id="vectors" type="file" accept=".jsonl"><div class="progress"><span id="progress-fill"></span></div><div id="ingest-status" class="status">Ready to index.</div></section>
+</div>
+<section class="panel search"><div class="heading"><span class="number">03</span><div><h2>Semantic search</h2><p>Ask in plain language. Open the exact source passage.</p></div></div><div class="search-row"><input id="query" type="search" placeholder="Where are shell commands checked before execution?"><button id="search" class="primary">Search ↗</button></div><div id="search-status" class="status">Your indexed passages will appear here.</div><div id="results" class="results"></div></section>
+</main>
+<footer>Private on this device · Chroma persistent store · localhost API</footer>
+</div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
