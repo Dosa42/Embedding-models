@@ -1,0 +1,29 @@
+name: Android build
+on:
+  push:
+    paths:
+      - android-app/**
+      - .github/workflows/android-build.yml
+  pull_request:
+    paths:
+      - android-app/**
+      - .github/workflows/android-build.yml
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: android-app
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - name: Build debug APK
+        working-directory: android-app
+        run: ./gradlew :app:assembleDebug
