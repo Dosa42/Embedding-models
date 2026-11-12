@@ -1,177 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:compileSdkVersion="35" android:compileSdkVersionCodename="15" android:installLocation="internalOnly" package="nom.vrd" platformBuildVersionCode="35" platformBuildVersionName="15">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
-    <uses-permission android:name="android.permission.NFC"/>
-    <uses-permission android:name="android.permission.UWB_RANGING"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
-    <uses-permission android:name="android.permission.MANAGE_MEDIA"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.BODY_SENSORS"/>
-    <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND"/>
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
-    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>
-    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" android:maxSdkVersion="27"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
-    <uses-permission android:name="com.android.voicemail.permission.ADD_VOICEMAIL"/>
-    <uses-permission android:name="android.permission.USE_SIP" android:maxSdkVersion="30"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH"/>
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="com.termux.permission.RUN_COMMAND"/>
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent>
-        <intent>
-            <action android:name="com.android.vending.billing.InAppBillingService.BIND"/>
-        </intent>
-    </queries>
-    <uses-permission android:name="android.permission.REORDER_TASKS"/>
-    <uses-permission android:name="com.android.vending.BILLING"/>
-    <uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
-    <uses-feature android:glEsVersion="0x20000" android:required="true"/>
-    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
-    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <uses-feature android:name="android.software.leanback" android:required="false"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-feature android:name="android.hardware.location" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <uses-feature android:name="android.hardware.audio.low_latency" android:required="false"/>
-    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
-    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
-    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
-    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
-    <uses-feature android:name="android.hardware.usb.host" android:required="false"/>
-    <uses-feature android:name="android.hardware.sensor.heartrate" android:required="false"/>
-    <application android:allowBackup="false" android:appCategory="game" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:banner="@mipmap/tv_banner" android:extractNativeLibs="true" android:hardwareAccelerated="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:largeHeap="true" android:name="com.nomone.vr_desktop.MyApplication" android:requestLegacyExternalStorage="true" android:resizeableActivity="true" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
-        <activity android:alwaysRetainTaskState="true" android:configChanges="mcc|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.nomone.vr_desktop.LaunchActivity" android:resizeableActivity="true" android:screenOrientation="landscape">
-            <meta-data android:name="android.game_mode_config" android:resource="@xml/game_mode_config"/>
-            <meta-data android:name="com.samsung.android.dex.transient_bar_delay" android:value="0"/>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:configChanges="mcc|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize" android:exported="true" android:label="@string/phantom_process_killing_activity_label" android:launchMode="singleTask" android:name="com.nomone.vr_desktop.PhantomProcessKillingDisablingGuide.PhantomProcessKillingDisablingGuideActivity" android:resizeableActivity="true" android:screenOrientation="fullSensor"/>
-        <receiver android:exported="false" android:name="com.nomone.vr_desktop.PhantomProcessKillingDisablingGuide.PhantomProcessKillingDisablingGuideActivity$NotificationHandler"/>
-        <receiver android:exported="true" android:name="nom.vrd.Launch">
-            <intent-filter>
-                <action android:name="top_or_left"/>
-                <action android:name="bottom_or_right"/>
-                <action android:name="freeform"/>
-                <action android:name="maintainOnScreen"/>
-            </intent-filter>
-        </receiver>
-        <meta-data android:name="com.samsung.android.keepalive.density" android:value="true"/>
-        <meta-data android:name="com.samsung.android.multidisplay.keep_process_alive" android:value="true"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.media.MediaManager" android:process=":media"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.process.GeckoChildProcessServices$gmplugin" android:process=":gmplugin"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.process.GeckoChildProcessServices$tab0" android:process=":tab0"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.process.GeckoChildProcessServices$tab1" android:process=":tab1"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.process.GeckoChildProcessServices$tab2" android:process=":tab2"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.process.GeckoChildProcessServices$socket" android:process=":socket"/>
-        <service android:enabled="true" android:exported="false" android:isolatedProcess="false" android:name="org.mozilla.gecko.gfx.SurfaceAllocatorService"/>
-        <meta-data android:name="com.google.android.play.billingclient.version" android:value="7.0.0"/>
-        <activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize" android:exported="false" android:name="com.android.billingclient.api.ProxyBillingActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        <activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize" android:exported="false" android:name="com.android.billingclient.api.ProxyBillingActivityV2" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
-        <service android:exported="false" android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery">
-            <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
-        </service>
-        <service android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService" android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
-        <provider android:authorities="nom.vrd.lifecycle-process" android:exported="false" android:multiprocess="true" android:name="androidx.lifecycle.ProcessLifecycleOwnerInitializer"/>
-    </application>
-</manifest>
-
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:usesCleartextTraffic="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
         <service
             android:name=".FastApiService"
             android:exported="true"
@@ -181,6 +22,7 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="On-device FastAPI and LangChain RAG server with local embedding inference and persistent Chroma collections" />
         </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
