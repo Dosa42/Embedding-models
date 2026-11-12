@@ -1,6 +1,8 @@
 package com.ayrvokan.embeddingmodels
 
 import android.content.Context
+import android.app.ActivityManager
+import android.os.PowerManager
 import org.json.JSONObject
 import java.io.File
 
@@ -18,6 +20,21 @@ class RagRuntime(private val context: Context, val chroma: ChromaBridge, val emb
     fun readFolderFile(id: String): String = chroma.readFolderFile(id)
     fun embedTexts(model: String, textsJson: String, kind: String): String = embeddings.embedTexts(model, textsJson, kind)
     fun assetText(path: String): String = context.assets.open(path).bufferedReader().use { it.readText() }
+
+    fun webSocketSettings(): String = context.getSharedPreferences("websocket_settings", Context.MODE_PRIVATE).getString("configuration", "{}") ?: "{}"
+
+    fun saveWebSocketSettings(value: String): String {
+        JSONObject(value)
+        check(context.getSharedPreferences("websocket_settings", Context.MODE_PRIVATE).edit().putString("configuration", value).commit()) { "Could not save WebSocket settings" }
+        return "{}"
+    }
+
+    fun webSocketMetrics(): String {
+        val memory = ActivityManager.MemoryInfo()
+        context.getSystemService(ActivityManager::class.java).getMemoryInfo(memory)
+        val power = context.getSystemService(PowerManager::class.java)
+        return JSONObject().put("available_memory_bytes", memory.availMem).put("total_memory_bytes", memory.totalMem).put("low_memory", memory.lowMemory).put("power_save", power.isPowerSaveMode).put("interactive", power.isInteractive).toString()
+    }
 
     @Synchronized
     fun assetFile(path: String): String {

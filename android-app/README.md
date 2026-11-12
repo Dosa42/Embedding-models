@@ -18,6 +18,7 @@ Uvicorn listens on `0.0.0.0:8765` with its WebSocket transport enabled. Use `htt
 | --- | --- | --- |
 | GET | `/health` | Service state, embedding readiness, actual framework versions |
 | GET | `/models` | Bundled model IDs and dimensions |
+| GET / PUT | `/settings/websocket` | Read or save WebSocket choices and live effective values |
 | GET / POST | `/projects` | List projects or create one with `{"name":"Sources"}` |
 | POST | `/documents` | Ingest source text or existing vectors |
 | POST | `/search` | Retrieve passages using a text query or vector |
@@ -62,6 +63,18 @@ Source ingestion:
 An optional `vector` on a document accepts exactly 384 numbers and preserves that supplied passage. Search accepts either `query` or `vector`, never both. Models are `e5` or `minilm`. Omit `limit` or set it to `null` to return every passage in the selected collection ranked by similarity. An optional positive `limit` requests a specific result count without an application-imposed upper ceiling. FastAPI validates requests and documents them in OpenAPI.
 
 Embedding requests use `{"model":"e5","input":"some text","input_type":"query"}`. Input may also be a nonempty array of texts, with no application-imposed array length cap. The response has `object`, `model`, and `data` entries with `index` and `embedding`. This endpoint supports float embeddings; it does not implement token-array inputs, base64 output, or usage counts.
+
+## Connection settings
+
+Open **Settings** in the app header. WebSocket transport, message size, receive queue, ping interval, pong timeout, and per-message compression can be changed from the interface and are stored in Android preferences. Settings are loaded again when the service starts.
+
+Capacity controls offer **Manual**, **Adaptive**, and **Unlimited**. Timing controls offer **Manual**, **Adaptive**, and **Disabled**. Compression offers enabled, disabled, and adaptive behavior. Manual values have no application-imposed upper ceiling. Adaptive behavior is selected explicitly per control; existing installations retain the Uvicorn values previously in use until settings are changed.
+
+Adaptive message size uses available device memory divided by 64 and the open WebSocket count, with at least one byte. Adaptive queue length uses a per-socket memory budget divided by the current message size, with at least one message. Adaptive pings use 20 seconds while the screen is active, or 60 seconds while power saving or the screen is inactive. Adaptive pong timeout is twice the effective ping interval, using 20 seconds when pings are disabled. Adaptive compression is enabled while power saving and low-memory state are both off. The adaptive refresh interval is configurable. Manual choices are retained; adaptation only changes fields explicitly set to Adaptive.
+
+The Running now panel shows the effective values, active socket count, available memory and power state. Message size and queue controls update existing protocol objects; in-progress message reads complete with the limit in effect when they began. Heartbeat changes restart the connection's keep-alive task. Disabling transport closes open WebSockets and disables further upgrades. Compression is negotiated when a connection opens, so a change applies to new connections. The HTTP server and retrieval service keep running while these settings change.
+
+`GET /settings/websocket` returns `saved`, `effective`, `device`, `active_connections`, and `compression_applies`. `PUT /settings/websocket` accepts the complete saved-settings object. No application WebSocket route is added by the settings feature.
 
 ## Request sizes and lifecycle
 

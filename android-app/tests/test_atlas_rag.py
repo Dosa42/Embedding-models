@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 
 
 MODULE_PATH = Path(__file__).parents[1] / "app/src/main/python/atlas_rag.py"
+sys.path.insert(0, str(MODULE_PATH.parent))
 SPEC = importlib.util.spec_from_file_location("atlas_rag", MODULE_PATH)
 atlas_rag = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = atlas_rag
@@ -25,6 +26,18 @@ class FakeRuntime:
         self.assets = tempfile.TemporaryDirectory()
         self.started = False
         self.stopped = False
+        self.websocket_settings = {}
+        self.metrics = {"available_memory_bytes": 1024 * 1024 * 1024, "total_memory_bytes": 8 * 1024 * 1024 * 1024, "low_memory": False, "power_save": False, "interactive": True}
+
+    def webSocketSettings(self):
+        return json.dumps(self.websocket_settings)
+
+    def saveWebSocketSettings(self, value):
+        self.websocket_settings = json.loads(value)
+        return "{}"
+
+    def webSocketMetrics(self):
+        return json.dumps(self.metrics)
 
     def runtimeStatus(self):
         return json.dumps({"state": "ready", "error": None, "embedding": {"ready": True, "error": None}, "database": "Chroma"})

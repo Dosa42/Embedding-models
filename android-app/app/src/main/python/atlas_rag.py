@@ -15,6 +15,7 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import RunnableLambda
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from atlas_settings import WebSocketController, WebSocketSettings
 
 
 ModelName = Literal["e5", "minilm"]
@@ -183,17 +184,30 @@ def retrieval(runtime, request, formatter):
 
 
 def configure(runtime):
+    websocket = WebSocketController(runtime, bridge)
+
     @asynccontextmanager
     async def lifespan(app):
+        await websocket.start()
         if hasattr(runtime, "serverReady"):
             runtime.serverReady()
         try:
             yield
         finally:
+            await websocket.close()
             if hasattr(runtime, "serverStopped"):
                 runtime.serverStopped()
 
     app = FastAPI(title="Source Atlas RAG", version="1.0.0", docs_url=None, redoc_url=None, lifespan=lifespan, description="On-device LangChain retrieval with E5, MiniLM and persistent Chroma. Returns source context and citations; no generation model is configured.")
+    app.state.websocket = websocket
+
+    @app.get("/settings/websocket", tags=["Settings"])
+    async def read_websocket_settings():
+        return await websocket.read()
+
+    @app.put("/settings/websocket", tags=["Settings"])
+    async def update_websocket_settings(settings: WebSocketSettings):
+        return await websocket.update(settings)
 
     def asset_response(path):
         if any(part in {"", ".", ".."} for part in path.split("/")) or "\\" in path:
@@ -214,6 +228,10 @@ def configure(runtime):
     @app.get("/app.css", include_in_schema=False)
     def interface_style():
         return asset_response("app.css")
+
+    @app.get("/settings.js", include_in_schema=False)
+    def settings_script():
+        return asset_response("settings.js")
 
     @app.get("/vendor/{path:path}", include_in_schema=False)
     def vendor_asset(path: str):
@@ -306,8 +324,10 @@ def configure(runtime):
 
 def run(runtime, host="0.0.0.0", port=8765):
     global _server
-    config = uvicorn.Config(configure(runtime), host=host, port=port, loop="asyncio", http="h11", ws="websockets", lifespan="on", access_log=False)
+    app = configure(runtime)
+    config = uvicorn.Config(app, host=host, port=port, loop="asyncio", http="h11", lifespan="on", access_log=False, **app.state.websocket.effective)
     _server = uvicorn.Server(config)
+    app.state.websocket.server = _server
     _server.run()
 
 

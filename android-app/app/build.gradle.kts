@@ -48,7 +48,7 @@ val stageModelAssets by tasks.registering(Sync::class) {
         into("corpus/src/main/java")
     }
     from(project.file("src/main/assets")) {
-        include("app.js", "index.html", "app.css", "embedding.js", "embedding.html")
+        include("app.js", "index.html", "app.css", "embedding.js", "embedding.html", "settings.js")
         into("corpus/src/main/assets")
     }
     from(project.file("src/main/python")) {
@@ -69,8 +69,8 @@ android {
         applicationId = "com.ayrvokan.embeddingmodels"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.5.1"
+        versionCode = 7
+        versionName = "0.6.0"
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
