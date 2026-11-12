@@ -20,6 +20,15 @@ jobs:
             android-app
             multilingual-e5-small-int8
             all-MiniLM-L6-v2
+            fastapi
+            langchain/libs/core
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Install Python test dependencies
+        run: python -m pip install -r android-app/python-requirements.txt ./fastapi ./langchain/libs/core
+      - name: Test FastAPI and LangChain retrieval
+        run: python -m unittest discover -s android-app/tests -p 'test_*.py'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

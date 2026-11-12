@@ -4,12 +4,15 @@ import java.security.MessageDigest
 
 plugins {
     id("com.android.application")
+    id("com.chaquo.python")
 }
 
 val runtimeAssets = layout.buildDirectory.dir("generated/runtime-assets/vendor")
 val fetchRuntimeAssets = tasks.register("fetchRuntimeAssets") {
     doLast {
         val downloads = listOf(
+            Triple("https://unpkg.com/swagger-ui-dist@5.34.1/swagger-ui-bundle.js", runtimeAssets.get().file("swagger-ui-bundle.js").asFile, "36eeb4d5640b9c036b1d0f854499af1cceebbdb260b790a03a18be5e8488fbf5"),
+            Triple("https://unpkg.com/swagger-ui-dist@5.34.1/swagger-ui.css", runtimeAssets.get().file("swagger-ui.css").asFile, "c3cfe8248c4b0b89673600fb829924eafbac6de4bc4b2b06f5f5243483074d0a"),
             Triple("https://github.com/chroma-core/chroma-android/releases/download/v0.0.1/chroma-android-release-0.0.1.aar", project.file("libs/chroma-android-release-0.0.1.aar"), "dcb4d2b4a6dac1f9784c629a2ee85ebb53467d2c38cfa4f73ebbaf254933fb2e"),
             Triple("https://unpkg.com/@huggingface/transformers@3.8.1/dist/transformers.min.js", runtimeAssets.get().file("transformers.min.js").asFile, "aa5002b70e789798da263f5f99c62bd3e8fcd0c119258a493c40c180648365fa"),
             Triple("https://unpkg.com/@huggingface/transformers@3.8.1/dist/ort-wasm-simd-threaded.jsep.mjs", runtimeAssets.get().file("ort-wasm-simd-threaded.jsep.mjs").asFile, "08fb86ec433c78bfb032c5d84a68b8e8e5a8d81268fa39e24314179a5767a5b9"),
@@ -45,8 +48,12 @@ val stageModelAssets by tasks.registering(Sync::class) {
         into("corpus/src/main/java")
     }
     from(project.file("src/main/assets")) {
-        include("app.js", "index.html", "app.css")
+        include("app.js", "index.html", "app.css", "embedding.js", "embedding.html")
         into("corpus/src/main/assets")
+    }
+    from(project.file("src/main/python")) {
+        include("**/*.py")
+        into("corpus/src/main/python")
     }
     from(runtimeAssets) {
         into("vendor")
@@ -62,8 +69,11 @@ android {
         applicationId = "com.ayrvokan.embeddingmodels"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4.0"
+        versionCode = 5
+        versionName = "0.5.0"
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     compileOptions {
@@ -81,4 +91,16 @@ tasks.named("preBuild") {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
     implementation("androidx.documentfile:documentfile:1.0.1")
+}
+
+chaquopy {
+    defaultConfig {
+        version = "3.14"
+        pip {
+            options("--find-links", rootProject.file("python-wheels").absolutePath)
+            install("-r", rootProject.file("python-requirements.txt").absolutePath)
+            install(rootProject.file("../fastapi").absolutePath)
+            install(rootProject.file("../langchain/libs/core").absolutePath)
+        }
+    }
 }

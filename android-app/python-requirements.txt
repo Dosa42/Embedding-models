@@ -1,0 +1,10 @@
+pydantic==2.12.5
+pydantic-core==2.41.5
+orjson==3.11.4
+uuid-utils==0.12.0
+xxhash==3.6.0
+zstandard==0.25.0
+PyYAML==6.0.3
+langsmith==0.14.9
+langchain-protocol==0.0.20
+uvicorn==0.38.0

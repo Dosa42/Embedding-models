@@ -1,17 +1,4 @@
-import {env, pipeline} from './vendor/transformers.min.js'
-
-env.allowRemoteModels = false
-env.allowLocalModels = true
-env.localModelPath = '/models/'
-env.backends.onnx.wasm.wasmPaths = '/vendor/'
-env.backends.onnx.wasm.numThreads = 1
-
 const $ = id => document.getElementById(id)
-const models = {
-  e5: {name: 'Xenova/multilingual-e5-small', dtype: 'int8'},
-  minilm: {name: 'sentence-transformers/all-MiniLM-L6-v2', dtype: 'fp32'}
-}
-const loaded = new Map()
 let folderFiles = []
 
 function updateContext() {
@@ -32,20 +19,21 @@ function setProgress(value) {
   $('progress-fill').parentElement.setAttribute('aria-valuenow', String(value))
 }
 
-function nativeResult(value) {
-  const data = JSON.parse(value)
-  if (data.error) throw new Error(data.error)
+async function request(path, body) {
+  const response = await fetch(path, body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {})
+  const data = await response.json()
+  if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail || data))
   return data
 }
 
 const library = {
-  projects: () => nativeResult(window.NativeChroma.listProjects()),
-  createProject: name => nativeResult(window.NativeChroma.createProject(name)),
-  add: items => nativeResult(window.NativeChroma.addDocuments($('project').value, $('model').value, JSON.stringify(items))),
-  search: vector => nativeResult(window.NativeChroma.query($('project').value, $('model').value, JSON.stringify(vector), 8)),
-  folderFiles: () => nativeResult(window.NativeChroma.listFolderFiles()),
-  corpusFiles: () => nativeResult(window.NativeChroma.listCorpusFiles()),
-  readFile: file => nativeResult(file.source === 'folder' ? window.NativeChroma.readFolderFile(String(file.id)) : window.NativeChroma.readCorpusFile(String(file.id)))
+  projects: () => request('/projects'),
+  createProject: name => request('/projects', {name}),
+  add: documents => request('/documents', {project: $('project').value, model: $('model').value, documents}),
+  search: query => request('/search', {project: $('project').value, model: $('model').value, query, limit: 8}),
+  folderFiles: () => request('/folder/files'),
+  corpusFiles: () => request('/corpus/files'),
+  readFile: file => request('/' + file.source + '/file/' + encodeURIComponent(file.id))
 }
 
 async function refreshProjects() {
@@ -66,24 +54,12 @@ async function refreshProjects() {
   }
 }
 
-async function embed(text, kind) {
-  const model = $('model').value
-  if (!loaded.has(model)) {
-    $('ingest-status').textContent = `Loading ${model === 'e5' ? 'E5' : 'MiniLM'} from the APK…`
-    const config = models[model]
-    loaded.set(model, pipeline('feature-extraction', config.name, {dtype: config.dtype, device: 'wasm'}))
-  }
-  const extractor = await loaded.get(model)
-  const input = model === 'e5' ? `${kind === 'query' ? 'query' : 'passage'}: ${text}` : text
-  const result = await extractor(input, {pooling: 'mean', normalize: true})
-  return Array.from(result.data)
-}
 
 function chunks(path, content) {
   const lines = content.replaceAll('\r\n', '\n').split('\n')
   const result = []
   for (let start = 0; start < lines.length; start += 28) {
-    const text = lines.slice(start, start + 34).join('\n').slice(0, 5000)
+    const text = lines.slice(start, start + 34).join('\n')
     if (text.trim()) result.push({path, line: start + 1, text})
   }
   return result
@@ -154,9 +130,9 @@ $('ingest').onclick = async () => {
     async function addSource(path, content) {
       if (content.includes('\0')) return
       for (const item of chunks(path, content)) {
-        item.vector = await embed(item.text, 'passage')
         pending.push(item)
         if (pending.length === 8) {
+          $('ingest-status').textContent = `Embedding and saving passages with ${$('model').selectedOptions[0].textContent}…`
           await library.add(pending.splice(0))
           saved += 8
           $('ingest-status').textContent = `${saved} passages saved to Chroma`
@@ -177,6 +153,7 @@ $('ingest').onclick = async () => {
     }
     if (pending.length) {
       const batch = pending.splice(0)
+      $('ingest-status').textContent = `Embedding and saving ${batch.length} passages…`
       await library.add(batch)
       saved += batch.length
     }
@@ -217,8 +194,7 @@ $('search').onclick = async () => {
   $('result-count').textContent = 'Searching…'
   $('search-status').textContent = 'Embedding query and searching Chroma…'
   try {
-    const vector = await embed(query, 'query')
-    const data = await library.search(vector)
+    const data = await library.search(query)
     $('result-count').textContent = `${data.hits.length} ${data.hits.length === 1 ? 'passage' : 'passages'}`
     $('search-status').textContent = data.hits.length ? `Showing source passages for “${query}”` : 'No passages found in this project and model. Add source in the workspace, or try another model.'
     for (const [index, hit] of data.hits.entries()) {

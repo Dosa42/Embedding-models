@@ -4,5 +4,9 @@
 /local.properties
 /.idea/
 *.iml
+__pycache__/
+*.pyc
+.pytest_cache/
 /app/libs/*.aar
 /app/libs/*.jar
+/.kotlin/

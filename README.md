@@ -22,7 +22,7 @@ The model produces 384-dimensional embeddings. Apply attention-mask mean pooling
 
 ## Android app
 
-The [android-app](android-app/) directory packages both models and the official Chroma Android library. It supports per-project source ingestion and semantic search with original file and line citations. The custom HTTP API and its foreground server service have been removed; the app accesses Chroma directly through its internal Android WebView bridge.
+The [android-app](android-app/) directory packages both models, the official Chroma Android library, embedded Python, FastAPI, and LangChain Core. Its foreground service owns text embedding and retrieval, and the interface uses the real FastAPI endpoints. Projects retain original file and line citations.
 
 ## Official framework sources
 
@@ -33,4 +33,4 @@ The full source snapshots below are included alongside the two model directories
 | [langchain](langchain/) | [langchain-ai/langchain](https://github.com/langchain-ai/langchain) | `771d11ba650b6fc43306d8f303e574814e433804` | 3,296 |
 | [fastapi](fastapi/) | [fastapi/fastapi](https://github.com/fastapi/fastapi) | `5add7a458d629b07311d48261f696b5ac2bb9a5f` | 3,241 |
 
-[upstream-sources.lock.json](upstream-sources.lock.json) records the upstream commits, Git tree hashes, archive checksums, file counts, and source sizes. These downloaded framework sources are not yet integrated into an Android RAG server.
+[upstream-sources.lock.json](upstream-sources.lock.json) records the upstream commits, Git tree hashes, archive checksums, file counts, and source sizes. The Android build packages FastAPI and LangChain Core from these pinned source snapshots. See [the Android runtime and API documentation](android-app/README.md).
