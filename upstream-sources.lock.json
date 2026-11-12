@@ -1,0 +1,27 @@
+{
+  "fetched_at": "2026-11-12T02:03:43.665169+00:00",
+  "snapshots": [
+    {
+      "directory": "langchain",
+      "repository": "https://github.com/langchain-ai/langchain",
+      "commit": "771d11ba650b6fc43306d8f303e574814e433804",
+      "tree": "b283085bf4a276a5f1a77cc8756e528b53a8177d",
+      "archive": "https://codeload.github.com/langchain-ai/langchain/tar.gz/771d11ba650b6fc43306d8f303e574814e433804",
+      "archive_sha256": "fd2072d3b91c2d659606cc85071bc9f3e5715299c4012defb41535425bccd4e8",
+      "files": 3296,
+      "bytes": 46089952,
+      "modifications": false
+    },
+    {
+      "directory": "fastapi",
+      "repository": "https://github.com/fastapi/fastapi",
+      "commit": "5add7a458d629b07311d48261f696b5ac2bb9a5f",
+      "tree": "aace7afdb19f38dd9ef5d735f66d52f197318654",
+      "archive": "https://codeload.github.com/fastapi/fastapi/tar.gz/5add7a458d629b07311d48261f696b5ac2bb9a5f",
+      "archive_sha256": "f59d9f708aa7cf1fb4c29069c3287317d07f1d3359e2ed921094266f18906e00",
+      "files": 3241,
+      "bytes": 35719323,
+      "modifications": false
+    }
+  ]
+}

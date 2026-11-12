@@ -62,8 +62,8 @@ android {
         applicationId = "com.ayrvokan.embeddingmodels"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
     }
 
     compileOptions {

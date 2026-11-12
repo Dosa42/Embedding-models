@@ -20,6 +20,17 @@ For retrieval, prefix queries with `query: ` and indexed text with `passage: `. 
 
 The model produces 384-dimensional embeddings. Apply attention-mask mean pooling and L2 normalization; inputs longer than 256 word pieces are truncated. The ONNX file SHA-256 is `6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452` and the Safetensors file SHA-256 is `53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db`.
 
-## Android app starter
+## Android app
 
-The [android-app](android-app/) directory is a buildable Kotlin Android project with a Gradle wrapper and a Samsung SDK library slot. Its placeholder screen does not package either model yet.
+The [android-app](android-app/) directory packages both models and the official Chroma Android library. It supports per-project source ingestion and semantic search with original file and line citations. The custom HTTP API and its foreground server service have been removed; the app accesses Chroma directly through its internal Android WebView bridge.
+
+## Official framework sources
+
+The full source snapshots below are included alongside the two model directories. Their upstream licenses, tests, examples, documentation, and package sources are preserved. They contain source at the pinned commits, without Git history or installed dependencies.
+
+| Directory | Official upstream | Commit | Files |
+| --- | --- | --- | ---: |
+| [langchain](langchain/) | [langchain-ai/langchain](https://github.com/langchain-ai/langchain) | `771d11ba650b6fc43306d8f303e574814e433804` | 3,296 |
+| [fastapi](fastapi/) | [fastapi/fastapi](https://github.com/fastapi/fastapi) | `5add7a458d629b07311d48261f696b5ac2bb9a5f` | 3,241 |
+
+[upstream-sources.lock.json](upstream-sources.lock.json) records the upstream commits, Git tree hashes, archive checksums, file counts, and source sizes. These downloaded framework sources are not yet integrated into an Android RAG server.

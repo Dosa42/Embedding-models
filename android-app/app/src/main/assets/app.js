@@ -32,15 +32,24 @@ function setProgress(value) {
   $('progress-fill').parentElement.setAttribute('aria-valuenow', String(value))
 }
 
-async function api(path, body) {
-  const response = await fetch('/api/' + path, body ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)} : {})
-  const data = await response.json()
-  if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`)
+function nativeResult(value) {
+  const data = JSON.parse(value)
+  if (data.error) throw new Error(data.error)
   return data
 }
 
+const library = {
+  projects: () => nativeResult(window.NativeChroma.listProjects()),
+  createProject: name => nativeResult(window.NativeChroma.createProject(name)),
+  add: items => nativeResult(window.NativeChroma.addDocuments($('project').value, $('model').value, JSON.stringify(items))),
+  search: vector => nativeResult(window.NativeChroma.query($('project').value, $('model').value, JSON.stringify(vector), 8)),
+  folderFiles: () => nativeResult(window.NativeChroma.listFolderFiles()),
+  corpusFiles: () => nativeResult(window.NativeChroma.listCorpusFiles()),
+  readFile: file => nativeResult(file.source === 'folder' ? window.NativeChroma.readFolderFile(String(file.id)) : window.NativeChroma.readCorpusFile(String(file.id)))
+}
+
 async function refreshProjects() {
-  const data = await api('projects')
+  const data = await library.projects()
   const current = $('project').value
   $('project').replaceChildren()
   for (const project of data.projects) {
@@ -52,7 +61,7 @@ async function refreshProjects() {
   if (current) $('project').value = current
   updateContext()
   if (!data.projects.length) {
-    await api('projects', {name: 'My project'})
+    await library.createProject('My project')
     await refreshProjects()
   }
 }
@@ -84,7 +93,7 @@ async function saveItems(items) {
   let saved = 0
   for (let offset = 0; offset < items.length; offset += 8) {
     const batch = items.slice(offset, offset + 8)
-    await api('ingest', {project: $('project').value, model: $('model').value, items: batch})
+    await library.add(batch)
     saved += batch.length
     setProgress(Math.round(100 * saved / items.length))
     $('ingest-status').textContent = `${saved} of ${items.length} passages saved to Chroma`
@@ -95,7 +104,7 @@ $('new-project').onclick = async () => {
   const name = prompt('Project name')?.trim()
   if (!name) return
   try {
-    const project = await api('projects', {name})
+    const project = await library.createProject(name)
     await refreshProjects()
     $('project').value = project.id
     resetSearch()
@@ -116,7 +125,7 @@ $('folder').onclick = () => {
 
 window.onFolderReady = async () => {
   try {
-    folderFiles = (await api('folder/files')).files.map(file => ({...file, source: 'folder'}))
+    folderFiles = (await library.folderFiles()).files.map(file => ({...file, source: 'folder'}))
     $('files').value = ''
     $('selected').textContent = `${folderFiles.length} files in source folder`
   } catch (error) { $('selected').textContent = error.message }
@@ -124,7 +133,7 @@ window.onFolderReady = async () => {
 
 $('corpus').onclick = async () => {
   try {
-    folderFiles = (await api('corpus/files')).files.map(file => ({...file, source: 'corpus'}))
+    folderFiles = (await library.corpusFiles()).files.map(file => ({...file, source: 'corpus'}))
     $('files').value = ''
     $('selected').textContent = `${folderFiles.length} bundled source files selected`
   } catch (error) { $('selected').textContent = error.message }
@@ -148,7 +157,7 @@ $('ingest').onclick = async () => {
         item.vector = await embed(item.text, 'passage')
         pending.push(item)
         if (pending.length === 8) {
-          await api('ingest', {project: $('project').value, model: $('model').value, items: pending.splice(0)})
+          await library.add(pending.splice(0))
           saved += 8
           $('ingest-status').textContent = `${saved} passages saved to Chroma`
         }
@@ -163,12 +172,12 @@ $('ingest').onclick = async () => {
     }
     for (const file of folderFiles) {
       $('ingest-status').textContent = `Reading ${file.path}…`
-      const source = await api(file.source + '/file/' + file.id)
+      const source = await library.readFile(file)
       await addSource(source.path, source.content)
     }
     if (pending.length) {
       const batch = pending.splice(0)
-      await api('ingest', {project: $('project').value, model: $('model').value, items: batch})
+      await library.add(batch)
       saved += batch.length
     }
     if (!saved) throw new Error('No nonempty passages found')
@@ -209,7 +218,7 @@ $('search').onclick = async () => {
   $('search-status').textContent = 'Embedding query and searching Chroma…'
   try {
     const vector = await embed(query, 'query')
-    const data = await api('search', {project: $('project').value, model: $('model').value, vector, limit: 8})
+    const data = await library.search(vector)
     $('result-count').textContent = `${data.hits.length} ${data.hits.length === 1 ? 'passage' : 'passages'}`
     $('search-status').textContent = data.hits.length ? `Showing source passages for “${query}”` : 'No passages found in this project and model. Add source in the workspace, or try another model.'
     for (const [index, hit] of data.hits.entries()) {
