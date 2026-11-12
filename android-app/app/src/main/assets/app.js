@@ -30,7 +30,7 @@ const library = {
   projects: () => request('/projects'),
   createProject: name => request('/projects', {name}),
   add: documents => request('/documents', {project: $('project').value, model: $('model').value, documents}),
-  search: query => request('/search', {project: $('project').value, model: $('model').value, query, limit: 8}),
+  search: query => request('/search', {project: $('project').value, model: $('model').value, query}),
   folderFiles: () => request('/folder/files'),
   corpusFiles: () => request('/corpus/files'),
   readFile: file => request('/' + file.source + '/file/' + encodeURIComponent(file.id))
@@ -66,14 +66,9 @@ function chunks(path, content) {
 }
 
 async function saveItems(items) {
-  let saved = 0
-  for (let offset = 0; offset < items.length; offset += 8) {
-    const batch = items.slice(offset, offset + 8)
-    await library.add(batch)
-    saved += batch.length
-    setProgress(Math.round(100 * saved / items.length))
-    $('ingest-status').textContent = `${saved} of ${items.length} passages saved to Chroma`
-  }
+  await library.add(items)
+  setProgress(100)
+  $('ingest-status').textContent = `${items.length} passages saved to Chroma`
 }
 
 $('new-project').onclick = async () => {
@@ -123,27 +118,19 @@ $('ingest').onclick = async () => {
   $('project').disabled = true
   setProgress(0)
   try {
-    const pending = []
-    let saved = 0
+    const documents = []
     let processed = 0
     const total = files.length + folderFiles.length
     async function addSource(path, content) {
       if (content.includes('\0')) return
       for (const item of chunks(path, content)) {
-        pending.push(item)
-        if (pending.length === 8) {
-          $('ingest-status').textContent = `Embedding and saving passages with ${$('model').selectedOptions[0].textContent}…`
-          await library.add(pending.splice(0))
-          saved += 8
-          $('ingest-status').textContent = `${saved} passages saved to Chroma`
-        }
+        documents.push(item)
       }
       processed++
       setProgress(Math.round(100 * processed / total))
     }
     for (const file of files) {
       $('ingest-status').textContent = `Reading ${file.name}…`
-      if (file.size > 4_000_000) throw new Error(`${file.name} exceeds the 4 MB per-file limit`)
       await addSource(file.webkitRelativePath || file.name, await file.text())
     }
     for (const file of folderFiles) {
@@ -151,14 +138,11 @@ $('ingest').onclick = async () => {
       const source = await library.readFile(file)
       await addSource(source.path, source.content)
     }
-    if (pending.length) {
-      const batch = pending.splice(0)
-      $('ingest-status').textContent = `Embedding and saving ${batch.length} passages…`
-      await library.add(batch)
-      saved += batch.length
-    }
-    if (!saved) throw new Error('No nonempty passages found')
-    $('ingest-status').textContent = `${saved} passages indexed in ${total} files.`
+    if (!documents.length) throw new Error('No nonempty passages found')
+    $('ingest-status').textContent = `Embedding and saving ${documents.length} passages…`
+    const result = await library.add(documents)
+    setProgress(100)
+    $('ingest-status').textContent = `${result.saved} passages indexed in ${total} files.`
   } catch (error) { $('ingest-status').textContent = error.message }
   finally { $('ingest').disabled = false; $('model').disabled = false; $('project').disabled = false }
 }

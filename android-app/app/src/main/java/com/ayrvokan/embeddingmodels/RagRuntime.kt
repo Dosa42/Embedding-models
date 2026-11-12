@@ -11,7 +11,7 @@ class RagRuntime(private val context: Context, val chroma: ChromaBridge, val emb
     fun listProjects(): String = chroma.listProjects()
     fun createProject(name: String): String = chroma.createProject(name)
     fun addDocuments(project: String, model: String, itemsJson: String): String = chroma.addDocuments(project, model, itemsJson)
-    fun query(project: String, model: String, vectorJson: String, limit: Int): String = chroma.query(project, model, vectorJson, limit)
+    fun query(project: String, model: String, vectorJson: String, limit: Int?): String = chroma.query(project, model, vectorJson, limit)
     fun listCorpusFiles(): String = chroma.listCorpusFiles()
     fun readCorpusFile(id: String): String = chroma.readCorpusFile(id)
     fun listFolderFiles(): String = chroma.listFolderFiles()

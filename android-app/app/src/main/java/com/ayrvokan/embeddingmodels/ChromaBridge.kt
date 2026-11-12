@@ -51,7 +51,7 @@ class ChromaBridge(private val context: Context) {
     @JavascriptInterface
     fun addDocuments(project: String, model: String, itemsJson: String): String = result {
         val items = JSONArray(itemsJson)
-        require(items.length() in 1..32) { "Send 1 to 32 passages at a time" }
+        require(items.length() > 0) { "Send at least one passage" }
         val docs = ArrayList<Document>()
         for (i in 0 until items.length()) {
             val item = items.getJSONObject(i)
@@ -69,11 +69,16 @@ class ChromaBridge(private val context: Context) {
     }
 
     @JavascriptInterface
-    fun query(project: String, model: String, vectorJson: String, limit: Int): String = result {
+    fun query(project: String, model: String, vectorJson: String, limit: Int?): String = result {
         val vector = floats(JSONArray(vectorJson))
         require(vector.size == 384) { "Expected 384 embedding values" }
         val hits = JSONArray()
-        for (hit in collection(project, model).query(arrayOf(vector), limit.coerceIn(1, 30))) {
+        require(limit == null || limit > 0) { "Result limit must be positive" }
+        val sources = collection(project, model)
+        val count = sources.count()
+        val requested = limit?.coerceAtMost(count) ?: count
+        val matches = if (requested > 0) sources.query(arrayOf(vector), requested) else emptyList()
+        for (hit in matches) {
             val path = hit.metadata?.get("path")?.toString() ?: hit.uri ?: "source"
             val line = (hit.metadata?.get("line") as? Number)?.toInt() ?: 1
             hits.put(JSONObject().put("path", path).put("line", line).put("citation", "$path:$line").put("text", hit.data).put("distance", hit.distance))
@@ -108,9 +113,7 @@ class ChromaBridge(private val context: Context) {
     fun readFolderFile(id: String): String = result {
         val entry = folderFiles[id] ?: throw IllegalArgumentException("File not found")
         val content = context.contentResolver.openInputStream(entry.second)?.use { source ->
-            val bytes = source.readBytes()
-            require(bytes.size <= 4_000_000) { "File exceeds 4 MB" }
-            String(bytes, Charsets.UTF_8)
+            source.bufferedReader(Charsets.UTF_8).readText()
         } ?: throw IllegalArgumentException("File unavailable")
         JSONObject().put("path", entry.first).put("content", content)
     }

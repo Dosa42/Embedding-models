@@ -50,7 +50,7 @@ class FastApiService : Service() {
                 }
                 val entry = Python.getInstance().getModule("atlas_rag")
                 module = entry
-                entry.callAttr("run", runtime, "127.0.0.1", 8765)
+                entry.callAttr("run", runtime, "0.0.0.0", 8765)
             } catch (error: Throwable) {
                 runtime.failure = error.message ?: error.javaClass.simpleName
                 runtime.state = "failed"
@@ -67,7 +67,7 @@ class FastApiService : Service() {
         runtime.embeddings.close()
         thread(name = "fastapi-shutdown") {
             try { module?.callAttr("stop") } catch (error: Exception) { Log.e("SourceAtlasRag", "FastAPI shutdown failed", error) }
-            serverThread?.join(10000)
+            serverThread?.join()
             runtime.chroma.close()
         }
         super.onDestroy()

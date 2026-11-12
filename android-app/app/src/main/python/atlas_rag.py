@@ -66,7 +66,7 @@ class AtlasRetriever(BaseRetriever):
     embeddings: Any
     project: str
     model: ModelName
-    limit: int = 8
+    limit: int | None = None
 
     def retrieve_vector(self, vector):
         result = bridge(self.runtime, "query", self.project, self.model, json.dumps(vector), self.limit)
@@ -101,7 +101,7 @@ class SourceDocument(BaseModel):
 class DocumentsRequest(BaseModel):
     project: Nonempty
     model: ModelName = "e5"
-    documents: list[SourceDocument] = Field(min_length=1, max_length=256)
+    documents: list[SourceDocument] = Field(min_length=1)
     chunk_lines: int = Field(default=80, ge=1, le=200)
     overlap_lines: int = Field(default=12, ge=0, le=199)
 
@@ -124,7 +124,7 @@ class SearchRequest(BaseModel):
     model: ModelName = "e5"
     query: Nonempty | None = None
     vector: Vector | None = None
-    limit: int = Field(default=8, ge=1, le=30)
+    limit: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
     def exactly_one_input(self):
@@ -139,7 +139,7 @@ class InvokeRequest(BaseModel):
 
 class EmbeddingRequest(BaseModel):
     model: ModelName = "e5"
-    input: Nonempty | Annotated[list[Nonempty], Field(min_length=1, max_length=32)]
+    input: Nonempty | Annotated[list[Nonempty], Field(min_length=1)]
     input_type: Literal["query", "passage"] = "passage"
     encoding_format: Literal["float"] = "float"
     dimensions: Literal[384] = 384
@@ -244,17 +244,15 @@ def configure(runtime):
     def add_documents(request: DocumentsRequest):
         chunks = [chunk for document in request.documents for chunk in chunk_document(document, request.chunk_lines, request.overlap_lines)]
         embeddings = AtlasEmbeddings(runtime, request.model)
-        saved = 0
-        for start in range(0, len(chunks), 8):
-            batch = chunks[start:start + 8]
-            pending = [chunk for chunk in batch if chunk.get("vector") is None]
-            if pending:
-                vectors = embeddings.embed_documents([chunk["text"] for chunk in pending])
-                for chunk, vector in zip(pending, vectors, strict=True):
-                    chunk["vector"] = vector
-            result = bridge(runtime, "addDocuments", request.project, request.model, json.dumps(batch))
-            saved += result["saved"]
-        return {"saved": saved, "files": len(request.documents), "model": request.model}
+        pending = [chunk for chunk in chunks if chunk.get("vector") is None]
+        if pending:
+            vectors = embeddings.embed_documents([chunk["text"] for chunk in pending])
+            for chunk, vector in zip(pending, vectors, strict=True):
+                chunk["vector"] = vector
+        if not chunks:
+            return {"saved": 0, "files": len(request.documents), "model": request.model}
+        result = bridge(runtime, "addDocuments", request.project, request.model, json.dumps(chunks))
+        return {"saved": result["saved"], "files": len(request.documents), "model": request.model}
 
     @app.post("/search", tags=["Retrieval"])
     def search(request: SearchRequest):
@@ -306,9 +304,9 @@ def configure(runtime):
     return app
 
 
-def run(runtime, host="127.0.0.1", port=8765):
+def run(runtime, host="0.0.0.0", port=8765):
     global _server
-    config = uvicorn.Config(configure(runtime), host=host, port=port, loop="asyncio", http="h11", ws="none", lifespan="on", access_log=False)
+    config = uvicorn.Config(configure(runtime), host=host, port=port, loop="asyncio", http="h11", ws="websockets", lifespan="on", access_log=False)
     _server = uvicorn.Server(config)
     _server.run()
 

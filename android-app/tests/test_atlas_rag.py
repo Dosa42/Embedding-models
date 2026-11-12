@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -122,7 +123,7 @@ class AtlasRagTests(unittest.TestCase):
         self.assertEqual(self.runtime.embeddings, [])
 
     def test_query_validation_rejects_ambiguous_and_invalid_requests(self):
-        invalid = [{}, {"query": "x", "vector": [0.0] * 384}, {"vector": [0.0] * 383}, {"query": "   "}, {"query": "x", "model": "unknown"}, {"query": "x", "limit": 31}]
+        invalid = [{}, {"query": "x", "vector": [0.0] * 384}, {"vector": [0.0] * 383}, {"query": "   "}, {"query": "x", "model": "unknown"}, {"query": "x", "limit": 0}]
         for payload in invalid:
             with self.subTest(payload=payload):
                 response = self.client.post("/search", json={"project": "project1", **payload})
@@ -199,13 +200,59 @@ class AtlasRagTests(unittest.TestCase):
         models = self.client.get("/models").json()["models"]
         self.assertEqual(models[0], {"id": "e5", "name": "intfloat/multilingual-e5-small", "dimensions": 384})
 
-    def test_document_batches_stay_within_runtime_limit(self):
-        documents = [{"path": f"src/{index}.ts", "text": str(index), "vector": [0.1] * 384} for index in range(35)]
+    def test_document_request_exceeds_previous_caps_without_splitting(self):
+        documents = [{"path": f"src/{index}.ts", "text": str(index), "vector": [0.1] * 384} for index in range(300)]
         response = self.client.post("/documents", json={"project": "project1", "documents": documents})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["saved"], 35)
-        self.assertEqual(self.runtime.saved_batches, [8, 8, 8, 8, 3])
+        self.assertEqual(response.json()["saved"], 300)
+        self.assertEqual(self.runtime.saved_batches, [300])
         self.assertEqual(self.runtime.embeddings, [])
+
+    def test_text_documents_embed_together_beyond_previous_batch_size(self):
+        documents = [{"path": f"src/{index}.ts", "text": str(index)} for index in range(40)]
+        response = self.client.post("/documents", json={"project": "project1", "documents": documents})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["saved"], 40)
+        self.assertEqual(self.runtime.saved_batches, [40])
+        self.assertEqual(len(self.runtime.embeddings), 1)
+        self.assertEqual(len(self.runtime.embeddings[0][1]), 40)
+
+    def test_embedding_input_exceeds_previous_text_limit(self):
+        texts = [f"text {index}" for index in range(40)]
+        response = self.client.post("/v1/embeddings", json={"model": "minilm", "input": texts})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()["data"]), 40)
+        self.assertEqual(self.runtime.embeddings, [("minilm", texts, "passage")])
+
+    def test_search_has_no_default_or_maximum_result_cap(self):
+        for limit in [None, 1000]:
+            payload = {"project": "project1", "query": "command checks"}
+            if limit is not None:
+                payload["limit"] = limit
+            response = self.client.post("/search", json=payload)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(self.runtime.queries[-1][3], limit)
+
+    def test_openapi_omits_removed_request_caps(self):
+        schemas = self.client.get("/openapi.json").json()["components"]["schemas"]
+        self.assertNotIn("maxItems", schemas["DocumentsRequest"]["properties"]["documents"])
+        limit = schemas["SearchRequest"]["properties"]["limit"]
+        self.assertNotIn("default", limit)
+        self.assertNotIn("maximum", limit["anyOf"][0])
+        embedding_array = schemas["EmbeddingRequest"]["properties"]["input"]["anyOf"][1]
+        self.assertNotIn("maxItems", embedding_array)
+
+    def test_uvicorn_binds_all_interfaces_and_enables_websockets(self):
+        with patch.object(atlas_rag.uvicorn, "Server") as server:
+            atlas_rag.run(self.runtime)
+            config = server.call_args.args[0]
+            self.assertEqual(config.host, "0.0.0.0")
+            self.assertEqual(config.port, 8765)
+            self.assertEqual(config.ws, "websockets")
+            config.load()
+            self.assertEqual(config.ws_protocol_class.__name__, "WebSocketProtocol")
+            server.return_value.run.assert_called_once_with()
+            self.assertFalse(any(route.path == "/rag/ws" for route in config.app.routes))
 
 
 if __name__ == "__main__":

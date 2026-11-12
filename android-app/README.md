@@ -12,7 +12,7 @@ Chroma persists at the original private `app_chroma/` path with `chroma_metadata
 
 ## API
 
-The base URL on the phone is `http://127.0.0.1:8765`. Offline Swagger is at `/docs`; the generated schema is at `/openapi.json`.
+Uvicorn listens on `0.0.0.0:8765` with its WebSocket transport enabled. Use `http://127.0.0.1:8765` on the phone or `http://PHONE_LAN_IP:8765` from the local network. Offline Swagger is at `/docs`; the generated schema is at `/openapi.json`. No application WebSocket route is registered.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
@@ -35,8 +35,7 @@ Plain-text retrieval:
 {
   "project": "PROJECT_ID",
   "model": "e5",
-  "query": "Where are shell commands checked before execution?",
-  "limit": 8
+  "query": "Where are shell commands checked before execution?"
 }
 ```
 
@@ -60,9 +59,15 @@ Source ingestion:
 }
 ```
 
-An optional `vector` on a document accepts exactly 384 numbers and preserves that supplied passage. Search accepts either `query` or `vector`, never both. Models are `e5` or `minilm`; retrieval limits are 1–30. FastAPI validates requests and documents them in OpenAPI.
+An optional `vector` on a document accepts exactly 384 numbers and preserves that supplied passage. Search accepts either `query` or `vector`, never both. Models are `e5` or `minilm`. Omit `limit` or set it to `null` to return every passage in the selected collection ranked by similarity. An optional positive `limit` requests a specific result count without an application-imposed upper ceiling. FastAPI validates requests and documents them in OpenAPI.
 
-Embedding requests use `{"model":"e5","input":"some text","input_type":"query"}`. Input may also be an array of up to 32 texts. The response has `object`, `model`, and `data` entries with `index` and `embedding`. This endpoint supports float embeddings; it does not implement token-array inputs, base64 output, or usage counts.
+Embedding requests use `{"model":"e5","input":"some text","input_type":"query"}`. Input may also be a nonempty array of texts, with no application-imposed array length cap. The response has `object`, `model`, and `data` entries with `index` and `embedding`. This endpoint supports float embeddings; it does not implement token-array inputs, base64 output, or usage counts.
+
+## Request sizes and lifecycle
+
+Source files have no application-imposed byte limit. Document requests and embedding input arrays have no application-imposed item limit. The interface sends the selected passages together; the API embeds and stores the supplied passages without fixed eight-item batches or a native 32-item ceiling.
+
+Embedding initialization and queued embedding operations wait until completion or a reported failure, with no fixed 60-second or 180-second deadline. The CPU wake lock is acquired for an embedding operation and released in its cleanup, without a timed expiry. Shutdown waits for the Uvicorn thread to finish before closing Chroma, without a 10-second join deadline.
 
 ## Build
 

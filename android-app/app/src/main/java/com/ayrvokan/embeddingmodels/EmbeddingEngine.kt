@@ -15,7 +15,6 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 class EmbeddingEngine(private val context: Context) {
     private val main = Handler(Looper.getMainLooper())
@@ -71,20 +70,20 @@ class EmbeddingEngine(private val context: Context) {
         check(!closed) { "Embedding runtime is closed" }
         require(model == "e5" || model == "minilm") { "Unknown embedding model" }
         require(kind == "query" || kind == "passage") { "Unknown embedding input type" }
-        check(initializedLatch.await(60, TimeUnit.SECONDS)) { "Embedding runtime did not initialize" }
+        initializedLatch.await()
         failure?.let { throw IllegalStateException(it) }
         val id = UUID.randomUUID().toString()
         val future = CompletableFuture<String>()
         pending[id] = future
         val power = context.getSystemService(PowerManager::class.java)
         val wake = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SourceAtlas:Embedding")
-        wake.acquire(180000)
+        wake.acquire()
         try {
             main.post {
                 if (closed) future.completeExceptionally(IllegalStateException("Embedding runtime is closed"))
                 else web.evaluateJavascript("window.embedRequest(${JSONObject.quote(id)},${JSONObject.quote(model)},${JSONObject.quote(textsJson)},${JSONObject.quote(kind)})", null)
             }
-            val result = future.get(180, TimeUnit.SECONDS)
+            val result = future.get()
             if (result.startsWith("{")) throw IllegalStateException(JSONObject(result).optString("error", "Embedding failed"))
             return result
         } finally {
