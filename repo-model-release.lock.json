@@ -1,0 +1,30 @@
+{
+  "repository": "Dosa42/Embedding-models",
+  "tag": "xenova-onnx-1-1",
+  "assets": [
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip",
+      "sha256": "ca76f7ceb94cf190397baeb56f369d9fd6c0e29c7be5a3373730cbb9aa544b47"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip",
+      "sha256": "45f01938e4703f72812c14fe711ecda8b5dfb85d67b1437d2ea363903ae3a1a2"
+    },
+    {
+      "name": "Xenova-e5-base-v2-q8-standalone.zip",
+      "sha256": "c940959f1e5d485a89d1e3fc8fbe1a050d174a229edec0bde1334a0fd97f881d"
+    },
+    {
+      "name": "Xenova-e5-base-v2-fp16-standalone.zip",
+      "sha256": "c93104309e4b0f586d589021b1ec12fae23450ca950c2f2773216b02ccadf758"
+    },
+    {
+      "name": "Xenova-e5-large-v2-q8-standalone.zip",
+      "sha256": "2332136d7a957c6988ec7e763c5b80b65990f773a477fa6bbfe3701882df224a"
+    },
+    {
+      "name": "Xenova-e5-large-v2-fp16-standalone.zip",
+      "sha256": "5739f6f13ab39e2ba09debf0704d9bf783322e6740ff1c751921bb68881617fb"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# Multipart model ZIPs are binary Git objects, without text conversion or diffs.
+standalone-models/**/*.part* binary

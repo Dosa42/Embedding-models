@@ -1,0 +1,77 @@
+name: Store model release inside repository
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-models-to-repo.yml'
+      - 'scripts/repo_model_packages.py'
+      - 'tests/test_repo_model_packages.py'
+      - 'repo-model-release.lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: import-models-to-repo
+  cancel-in-progress: false
+
+jobs:
+  import-models:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          sparse-checkout: |
+            scripts
+            tests
+            standalone-models
+      - name: Test offline reconstruction and download integrity
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Download pinned release packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag=$(python3 -c 'import json; print(json.load(open("repo-model-release.lock.json"))["tag"])')
+          mkdir -p "$RUNNER_TEMP/model-release"
+          gh release download "$tag" --pattern 'Xenova-*-standalone.zip' --dir "$RUNNER_TEMP/model-release"
+      - name: Store verified parts in Git and push each package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # ZIP bytes are already compressed; avoid expensive delta searches.
+          git config core.compression 0
+          git config pack.window 0
+          git config pack.threads 2
+          python3 -c 'import json; print("\n".join(a["name"] for a in json.load(open("repo-model-release.lock.json"))["assets"]))' > "$RUNNER_TEMP/model-assets.txt"
+          while IFS= read -r asset; do
+            python3 scripts/repo_model_packages.py stage --source "$RUNNER_TEMP/model-release" --asset "$asset"
+            folder="standalone-models/${asset%.zip}"
+            git add -- "$folder"
+            if git diff --cached --quiet; then
+              echo "Already committed: $asset"
+              continue
+            fi
+            git commit -m "Store $asset in repository as verified 48 MiB parts"
+            # Preserve intervening commits; never force-push.
+            git pull --rebase origin main
+            git push origin HEAD:main
+          done < "$RUNNER_TEMP/model-assets.txt"
+      - name: Verify all six committed model packages
+        run: python3 scripts/repo_model_packages.py verify
+      - name: Link repository model files
+        shell: bash
+        run: |
+          printf '## Models stored in Git\n\nhttps://github.com/%s/tree/main/standalone-models\n\nRestore offline with `python3 scripts/repo_model_packages.py restore --extract`.\n' "$GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
