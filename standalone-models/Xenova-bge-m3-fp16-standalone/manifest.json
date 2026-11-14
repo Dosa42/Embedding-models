@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "archive": "Xenova-bge-m3-fp16-standalone.zip",
+  "size": 1054242661,
+  "sha256": "45f01938e4703f72812c14fe711ecda8b5dfb85d67b1437d2ea363903ae3a1a2",
+  "parts": [
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part001",
+      "size": 50331648,
+      "sha256": "8765cf22f266d7977b14d471108dd5c6e7ddaf9164aa006171e9a658840ee052"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part002",
+      "size": 50331648,
+      "sha256": "a329342b869bc921be4f0fa50f5c155713e9b91021ddc5bd55d92d4ae8561e8b"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part003",
+      "size": 50331648,
+      "sha256": "b4525384cb0f08f9881d8a424696a8766546df055e761e26ca9b164d60879e81"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part004",
+      "size": 50331648,
+      "sha256": "ba4726b60881477742ebfa5e01e89164419454af1deecfe652c01daba004852d"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part005",
+      "size": 50331648,
+      "sha256": "9fe1f4f46bfd37ca5a6b437c768f16876509bbac31330738e3a9b19e39a7a718"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part006",
+      "size": 50331648,
+      "sha256": "1aeaa9feb5e9851da65f3727339dd481995e7794f0caea802f3790f3194287ee"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part007",
+      "size": 50331648,
+      "sha256": "27affa28f211ed75434bcacb502735722ae77150b707cc256e24f2f0a9043a2c"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part008",
+      "size": 50331648,
+      "sha256": "b9a1956a7aa9fa9727b2e20237879fdba82d5b9587a3f50dd7fff15dc8c5eab5"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part009",
+      "size": 50331648,
+      "sha256": "1151f577f182a74a41b06ebf2d8776118ad14fdc97760a2bc9bba174e71fbdd2"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part010",
+      "size": 50331648,
+      "sha256": "df44ccb102113f9cdb4305299f98fbe22b06ffcf728c36711e83333787c0149b"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part011",
+      "size": 50331648,
+      "sha256": "9302125876d69232238c00a5635987a0d0194e71785a8f6b865d621d0556d4f7"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part012",
+      "size": 50331648,
+      "sha256": "63798bf854709770c48b19c76b2e6d620f1f7eb3b81115c7e3cce7658f689159"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part013",
+      "size": 50331648,
+      "sha256": "4c5efcbca1c04f6b45a320afa0add2ba4f38a58173de080eb9465314cbe6ef78"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part014",
+      "size": 50331648,
+      "sha256": "31ffd631fb6ad63693cd2b1fd9b52c5e8a83417d9cd1dd78dc92ccd42a675c8b"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part015",
+      "size": 50331648,
+      "sha256": "d9c27a7113788fbc411dc0b8d57aab6b591498ea99be2b574024abe23fb4fd43"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part016",
+      "size": 50331648,
+      "sha256": "8f473f30545c89eda4354667edcc243223b6bc8d8db352cf7e1029bbc4227bdb"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part017",
+      "size": 50331648,
+      "sha256": "f97eae16fd3f38891243bff53fa31e71ef38cbe0be7bf0ac5877e12ab111bd45"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part018",
+      "size": 50331648,
+      "sha256": "43f0198ae9ce0226ce1c1fb1be9e7e18d42f1fb0cdd0f7c6e8f592e7685f4c6a"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part019",
+      "size": 50331648,
+      "sha256": "1d40f24f5e51c29273fb6a5bbd8ea8581f8e30d93a887009da0c199a10d02e50"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part020",
+      "size": 50331648,
+      "sha256": "7b8ba1dde02b6c9c942d1b705e635d6286ddcd194a669582a5bbab2134c8e4a6"
+    },
+    {
+      "name": "Xenova-bge-m3-fp16-standalone.zip.part021",
+      "size": 47609701,
+      "sha256": "20ba8a8779e46fe3e36d3f77f7459d5e909582525c76fcd52be065c8c3c9686b"
+    }
+  ]
+}
