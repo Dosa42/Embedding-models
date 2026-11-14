@@ -51,6 +51,26 @@ def main():
                         raise ValueError('Git checksum mismatch: ' + name)
                     records.append({'path': name, 'size': count, 'sha256': digest.hexdigest()})
                     print(repo, dtype, name, count, flush=True)
+                if repo.startswith('vectara/'):
+                    dependency = 'google/flan-t5-base'
+                    with get('https://huggingface.co/api/models/' + dependency + '?blobs=true') as response:
+                        foundation = json.load(response)
+                    required = {'config.json', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'spiece.model'}
+                    selected = [e for e in foundation['siblings'] if e['rfilename'] in required]
+                    if {e['rfilename'] for e in selected} != required:
+                        raise ValueError('Incomplete foundation tokenizer/config')
+                    for entry in selected:
+                        name = entry['rfilename']
+                        with get('https://huggingface.co/' + dependency + '/resolve/' + foundation['sha'] + '/' + name) as response:
+                            data = response.read()
+                        digest = hashlib.sha256(data).hexdigest()
+                        expected = entry.get('lfs', {}).get('sha256')
+                        actual = digest if expected else hashlib.sha1(('blob ' + str(len(data)) + '\0').encode() + data).hexdigest()
+                        if len(data) != entry['size'] or actual != (expected or entry['blobId']):
+                            raise ValueError('Foundation checksum mismatch: ' + name)
+                        archive.writestr(dependency + '/' + name, data)
+                        records.append({'repository': dependency, 'revision': foundation['sha'], 'path': name, 'size': len(data), 'sha256': digest})
+                    archive.writestr('OFFLINE-USAGE.txt', 'Vectara original model, not an ONNX/q8 conversion.\nIncludes upstream Python model code, weights and the foundation tokenizer/config.\nAfter extracting, set config.foundation to the absolute local google/flan-t5-base directory before constructing the model.\nLoad the Vectara config/model from its local directory with local_files_only=True.\nThe original custom model implementation requires trust_remote_code=True to load; the downloader never executes it.\nPython, PyTorch and compatible Transformers dependencies must be installed separately.\n')
                 manifest = {'repository': repo, 'revision': revision, 'variant': dtype, 'files': records}
                 archive.writestr('STANDALONE-MANIFEST.json', json.dumps(manifest, indent=2))
             with zipfile.ZipFile(OUT / filename) as archive:
