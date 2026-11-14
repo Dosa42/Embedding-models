@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 import numpy as np
@@ -36,12 +37,15 @@ def verify_model(embedder):
     return entries[0]['revision']
 
 
-def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384, overlap=64, batch_size=4, max_chunks=100000, threads=2):
+def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384, overlap=64, batch_size=4, max_chunks=100000, threads=2, read_file=read_segments, select_paths=None):
     """Run in a dedicated process; exiting closes all Chroma handles before export."""
     if model not in MODELS or dtype not in WEIGHTS:
         raise ValueError('Unknown model or precision')
     if not 1 <= batch_size <= 16 or not 1 <= threads <= 8 or not 1 <= max_chunks <= 100000:
         raise ValueError('batch_size=1..16, threads=1..8 and max_chunks=1..100000 required')
+    started = time.perf_counter()
+    inference_seconds = 0.0
+    token_count = 0
     output = Path(output)
     if output.exists() and any(output.iterdir()):
         raise ValueError('Output directory must be empty')
@@ -63,12 +67,14 @@ def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384,
         with tempfile.TemporaryDirectory(prefix='ingestion-input-') as temporary:
             work = Path(temporary)
             paths = extract_zip(source_zip, work)
+            if select_paths is not None:
+                paths = select_paths(paths, work)
             with (output / 'chunks.jsonl').open('w', encoding='utf-8') as jsonl:
                 for document_id, path in enumerate(paths, 1):
                     relative = path.relative_to(work).as_posix()
                     record = {'id': document_id, 'path': relative, 'sha256': sha256(path), 'file_type': path.suffix.lower(), 'status': 'indexed', 'detail': None, 'chunk_count': 0}
                     try:
-                        segments = list(read_segments(path))
+                        segments = list(read_file(path))
                         if any(len(text) > 5_000_000 for _, _, text in segments) or sum(len(text) for _, _, text in segments) > 20_000_000:
                             raise ValueError('Document exceeds extracted text limit')
                     except Exception as error:
@@ -77,10 +83,13 @@ def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384,
                     pending = []
     
                     def flush():
-                        nonlocal total_chunks
+                        nonlocal total_chunks, inference_seconds, token_count
                         if not pending:
                             return
+                        inference_started = time.perf_counter()
                         vectors = embedder.encode([row['text'] for row in pending])
+                        inference_seconds += time.perf_counter() - inference_started
+                        token_count += sum(row['token_count'] for row in pending)
                         ids, metadatas = [], []
                         for row in pending:
                             identity = f"{relative}\0{record['sha256']}\0{row['chunk_index']}"
@@ -117,6 +126,7 @@ def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384,
             raise ValueError('Chroma record count mismatch')
         metadata.update(document_count=len(documents), indexed_documents=sum(d['status'] == 'indexed' for d in documents), chunk_count=total_chunks,
                         skipped_documents=sum(d['status'] != 'indexed' for d in documents))
+        metadata.update(elapsed_seconds=time.perf_counter() - started, inference_seconds=inference_seconds, embedded_tokens=token_count)
         collection.modify(metadata={'model': metadata['model'], 'dtype': dtype, 'dimension': embedder.dimension, 'provenance_json': json.dumps(metadata)})
         manifest = {'metadata': metadata, 'documents': documents, 'chunks_jsonl_sha256': sha256(output / 'chunks.jsonl')}
         (output / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

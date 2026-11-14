@@ -1,0 +1,9 @@
+{
+  "source": "standalone-models/ingestion target/rea-rea-agents-6.8.0.zip",
+  "model": "Xenova/bge-m3",
+  "dtype": "fp16",
+  "include_hidden": true,
+  "exclude": [],
+  "shards": 16,
+  "request": "Full ingestion with source coverage, performance and vector integrity evidence"
+}
