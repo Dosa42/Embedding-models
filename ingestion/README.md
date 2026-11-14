@@ -111,6 +111,13 @@ YAML/XML, HTML, PDF met tekstlaag, DOCX (body-paragrafen en tabellen), en gangba
 programmeertalen. HTML-script/style-inhoud wordt niet meegenomen. Documenten
 worden nooit als programma uitgevoerd. Geneste ZIPs worden niet verder uitgepakt.
 
+Er is geen uitsluiting op verborgen namen of mappen: onder andere `.git`,
+`.github`, `node_modules` en `__MACOSX` worden gewoon verwerkt. `.gitignore`
+wordt als tekst gelezen, niet als filter toegepast. Bestanden zonder extensie
+(zoals `.env`, `.gitignore`, `.git/config` en `LICENSE`) worden als tekst geprobeerd.
+Dezelfde formaat- en decodeercontroles gelden voor alle bestanden: binaire of
+niet-ondersteunde bestanden worden met reden in `manifest.json` overgeslagen.
+
 De tokenizer van het gekozen model bepaalt de chunkgrenzen en overlap. Elke chunk
 wordt opnieuw gecontroleerd op de modelcontext; er is geen stille afkapping.
 E5-documenten krijgen `passage: ` en zoekvragen `query: `, met masked mean pooling.

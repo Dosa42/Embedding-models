@@ -110,7 +110,7 @@ def read_segments(path):
             yield f'paragraph:{i}', None, paragraph.text
         for i, table in enumerate(doc.tables, 1):
             yield f'table:{i}', None, '\n'.join('\t'.join(c.text for c in row.cells) for row in table.rows)
-    elif suffix in TEXT_EXTENSIONS or suffix in ('.html', '.htm'):
+    elif suffix in TEXT_EXTENSIONS or suffix in ('', '.html', '.htm'):
         raw = path.read_bytes()
         encoding = 'utf-16' if raw.startswith((b'\xff\xfe', b'\xfe\xff')) else 'utf-8-sig'
         text = raw.decode(encoding)

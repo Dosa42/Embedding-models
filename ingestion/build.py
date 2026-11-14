@@ -68,8 +68,6 @@ def ingest_worker(source_zip, model_dir, model, dtype, output, chunk_tokens=384,
                     relative = path.relative_to(work).as_posix()
                     record = {'id': document_id, 'path': relative, 'sha256': sha256(path), 'file_type': path.suffix.lower(), 'status': 'indexed', 'detail': None, 'chunk_count': 0}
                     try:
-                        if '__MACOSX' in path.parts or path.name.startswith('.'):
-                            raise ValueError('Archive metadata/hidden file skipped')
                         segments = list(read_segments(path))
                         if any(len(text) > 5_000_000 for _, _, text in segments) or sum(len(text) for _, _, text in segments) > 20_000_000:
                             raise ValueError('Document exceeds extracted text limit')

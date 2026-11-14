@@ -127,6 +127,22 @@ class IngestionTests(unittest.TestCase):
             self.assertTrue(any(name.startswith('chroma_db/') for name in z.namelist()))
             self.assertIn('ingestion/search.py', z.namelist())
 
+    def test_hidden_files_and_directories_are_indexed(self):
+        names = ['.notes.md', '.gitignore', '.env', '.git/config', '.github/workflows/test.yml',
+                 '__MACOSX/notes.txt', 'node_modules/package/readme.md', 'LICENSE']
+        source = self.make_zip({**{name: 'word1 word2' for name in names}, '.git/objects/binary': b'\x00\xff'})
+        output = self.root / 'hidden-result'
+        with patch('ingestion.build.Embedder', FakeEmbedder), patch('ingestion.build.verify_model', return_value='test'):
+            result = ingest_worker(source, self.root, 'e5-base-v2', 'q8', output, 16, 4)
+        self.assertEqual({d['path'] for d in result['documents'] if d['status'] == 'indexed'}, set(names))
+        self.assertEqual(result['metadata']['skipped_documents'], 1)
+        client = chroma_client(output / 'chroma_db')
+        try:
+            stored = client.get_collection('chunks', embedding_function=None).get(include=['metadatas'])
+            self.assertEqual({m['source'] for m in stored['metadatas']}, set(names))
+        finally:
+            client.close()
+
     def test_prepare_selects_one_model_and_verifies_its_members(self):
         from ingestion.prepare import prepare
         target = self.root / 'standalone-models' / 'ingestion target'
