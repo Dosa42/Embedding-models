@@ -48,7 +48,7 @@ def quantize_potion(source, target):
     if len(tables) != 1:
         raise ValueError('Expected one static embedding table')
     rewritten = 0
-    for graph in list(graphs(model.graph)):
+    for graph in reversed(list(graphs(model.graph))):
         nodes = []
         for node in graph.node:
             if node.op_type != 'Gather' or node.input[0] not in tables:
