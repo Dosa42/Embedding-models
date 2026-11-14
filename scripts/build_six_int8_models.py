@@ -147,8 +147,10 @@ def verify(model_path, root, spec, original, conversion):
     for graph in graphs(model.graph):
         for tensor in graph.initializer:
             counts[TensorProto.DataType.Name(tensor.data_type)] += math.prod(tensor.dims)
-    if counts['INT8'] < 1_000_000:
-        raise ValueError('Missing substantial signed INT8 weights')
+    quantized_elements = counts['INT8'] + counts['UINT8']
+    floating_elements = counts['FLOAT'] + counts['FLOAT16'] + counts['DOUBLE']
+    if counts['INT8'] == 0 or quantized_elements < 0.8 * (quantized_elements + floating_elements):
+        raise ValueError('Missing signed INT8 or predominantly 8-bit weights')
     runtime = session(model_path)
     tokenizer = Tokenizer.from_file(str(root / 'tokenizer.json'))
     texts = ['The cat sits on the mat.', 'Mars is the red planet.', 'Türkçe bir örnek cümle.', 'A longer sentence with several words tests variable sequence lengths.']
