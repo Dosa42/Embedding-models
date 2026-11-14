@@ -1,0 +1,642 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "key": "gliner_small-v2.1",
+      "repository": "onnx-community/gliner_small-v2.1",
+      "requested_repository": "onnx-community/gliner_small-v2.1",
+      "revision": "8142fb00740ccea973e64b1272949ff48653df5e",
+      "group": "03_token_classifiers",
+      "kind": "gliner",
+      "source_onnx": "onnx/model_int8.onnx",
+      "name": "onnx-community-gliner_small-v2.1-int8-standalone.zip",
+      "size": 127269724,
+      "sha256": "9784d196517adec1a16e31669cafc5de68b848d40ec7c3ab8fcd523c606ab10c",
+      "onnx_size": 183403734,
+      "onnx_sha256": "c76c90920547fd937aaf505e7f2de5ec73168bf1c25abbb55a298104cb061400",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 7548978,
+          "UINT8": 98307073,
+          "INT8": 53870641
+        },
+        "quantized_weight_fraction": 0.9527381559996246,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                8,
+                12,
+                3
+              ],
+              "prompts_embedding": [
+                1,
+                3,
+                512
+              ],
+              "2973": [
+                1,
+                3
+              ],
+              "onnx::Shape_3287": [
+                1,
+                8,
+                512
+              ],
+              "onnx::Cast_3115": [
+                1,
+                8
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                8,
+                12,
+                3
+              ],
+              "prompts_embedding": [
+                3,
+                3,
+                512
+              ],
+              "2973": [
+                3,
+                3
+              ],
+              "onnx::Shape_3287": [
+                3,
+                8,
+                512
+              ],
+              "onnx::Cast_3115": [
+                3,
+                8
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "bert-base-NER",
+      "repository": "Xenova/bert-base-NER",
+      "requested_repository": "Xenova/bert-base-NER",
+      "revision": "8e892123e8b7c2c0c2bd1dcb598b7d244c4e53aa",
+      "group": "03_token_classifiers",
+      "kind": "ner",
+      "source_onnx": "onnx/model_int8.onnx",
+      "name": "Xenova-bert-base-NER-int8-standalone.zip",
+      "size": 69019676,
+      "sha256": "01e3b591f12ad72572a443d0cdc61af55451663ed6ffbe145a1f7cae9dfa2d90",
+      "onnx_size": 108486236,
+      "onnx_sha256": "7de0a4606c65b60da275a72f37b76a102c41e2b79c6463096a9d0cb800bf3f2c",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 519,
+          "FLOAT": 121437,
+          "UINT8": 22663683,
+          "INT8": 84941641
+        },
+        "quantized_weight_fraction": 0.9988727313540968,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                10,
+                9
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                19,
+                9
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "bert-base-NER-uncased",
+      "repository": "Xenova/bert-base-NER-uncased",
+      "requested_repository": "Xenova/bert-base-NER-uncased",
+      "revision": "5e99d439d48710336764eea7b6f8ff87f2f40ae4",
+      "group": "03_token_classifiers",
+      "kind": "ner",
+      "source_onnx": "onnx/model_int8.onnx",
+      "name": "Xenova-bert-base-NER-uncased-int8-standalone.zip",
+      "size": 67189195,
+      "sha256": "1d8b6c5c3b0f5af88cebd42dfd0f73aeb02b4bcd13baa7e063affc67858f1f8c",
+      "onnx_size": 109658204,
+      "onnx_sha256": "37103d2168679e618ebaaa672ad33bcb1167c1776f840e1506a83527cb48b5a7",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 519,
+          "FLOAT": 121437,
+          "UINT8": 23835651,
+          "INT8": 84941641
+        },
+        "quantized_weight_fraction": 0.9988848630180064,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                10,
+                9
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                14,
+                9
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+      "repository": "Xenova/DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+      "requested_repository": "Xenova/DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+      "revision": "42dedb84d69d3a3b4ad75ce1c1475f7c9f3a8b61",
+      "group": "04_zero_shot",
+      "kind": "zero_shot",
+      "source_onnx": "onnx/model_int8.onnx",
+      "name": "Xenova-DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary-int8-standalone.zip",
+      "size": 69544349,
+      "sha256": "0fefcce1c56d19b37fc8555b523346602b4fd990bb378cc3ff7d902df45ecc6a",
+      "onnx_size": 90408881,
+      "onnx_sha256": "ad68c7d3adf6b518cd5297a1fce6bbd1874fe3705dee2042001ae470cd483f4b",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 4779736,
+          "INT64": 23,
+          "UINT8": 49190401,
+          "INT8": 21381962
+        },
+        "quantized_weight_fraction": 0.9365679780200947,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                2
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                2
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "distilbert-base-uncased-mnli",
+      "repository": "Xenova/distilbert-base-uncased-mnli",
+      "requested_repository": "Xenova/distilbert-base-uncased-mnli",
+      "revision": "fddd480db7392a87114a6813c6acb5ede13ff4ee",
+      "group": "04_zero_shot",
+      "kind": "zero_shot",
+      "source_onnx": "onnx/model_int8.onnx",
+      "name": "Xenova-distilbert-base-uncased-mnli-int8-standalone.zip",
+      "size": 42368289,
+      "sha256": "d07ed6f517b2ffec199867d1af099bea06be52caec6e10a02982fabea67402fc",
+      "onnx_size": 67333959,
+      "onnx_sha256": "ebfda67883e5df1ffb544043ae47ae64dd4cd9084ae595032f3662ff5050d651",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 521,
+          "FLOAT": 62258,
+          "UINT8": 23834114,
+          "INT8": 43059494
+        },
+        "quantized_weight_fraction": 0.9990701636209142,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                3
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                3
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "mDeBERTa-v3-base-mnli-xnli",
+      "repository": "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli",
+      "requested_repository": "Xenova/mDeBERTa-v3-base-mnli-xnli",
+      "revision": "8adb042d524ecd5c26d3e3ba0e3fbcf7e2d0864c",
+      "group": "04_zero_shot",
+      "kind": "zero_shot",
+      "source_onnx": "onnx/model_quantized.onnx",
+      "name": "MoritzLaurer-mDeBERTa-v3-base-mnli-xnli-int8-standalone.zip",
+      "size": 239135105,
+      "sha256": "c89a14b1ad260608307b3c700e93e17132c5e77187590e097197e7c859ea00e2",
+      "onnx_size": 338679133,
+      "onnx_sha256": "27c39e884c14b03cf46cfc5485971b6db70ff330220d93dfe729c63fde43af0e",
+      "conversion": {
+        "method": "upstream 8-bit ONNX unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 14756359,
+          "UINT8": 192768001,
+          "INT8": 85610499
+        },
+        "quantized_weight_fraction": 0.9496601698947037,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                3
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                3
+              ]
+            }
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "answerai-colbert-small-v1",
+      "repository": "libryo-ai/answerai-colbert-small-v1",
+      "requested_repository": "libryo-ai/answerai-colbert-small-v1",
+      "revision": "5508fa690d513c6b8a0a5913d7f34f473eb48b4c",
+      "group": "05_colbert",
+      "kind": "colbert",
+      "source_onnx": "answerai_colbert_small_v1.onnx",
+      "dimension": 96,
+      "name": "libryo-ai-answerai-colbert-small-v1-int8-standalone.zip",
+      "size": 31105478,
+      "sha256": "d72b23d40a7c1b0cf45e972a01944c67110a6140a1650f3ad078f6f7562e69cd",
+      "onnx_size": 34222430,
+      "onnx_sha256": "db54cb95cd32a68d234722b3c6c126a1c028e3e965e88b5a0a3e0976884be437",
+      "conversion": {
+        "method": "dynamic INT8, per-channel matrix weights; preserved trained token projection and normalization",
+        "rowwise_int8_embedding_tables": [
+          "bert.embeddings.word_embeddings.weight",
+          "bert.embeddings.position_embeddings.weight",
+          "bert.embeddings.token_type_embeddings.weight"
+        ],
+        "quantization": "symmetric per-row signed INT8 embedding tables; dynamic per-channel QInt8 MatMul/Gemm",
+        "mode": "dynamic_full",
+        "rejected_candidates": []
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 133276,
+          "INT8": 33229920
+        },
+        "quantized_weight_fraction": 0.9960052987729353,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "contextual": [
+                1,
+                11,
+                96
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.9973939657211304,
+            "mean_token_cosine_vs_fp32": 0.9987254738807678,
+            "max_absolute_error": 0.020003236830234528
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "contextual": [
+                3,
+                15,
+                96
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.996040940284729,
+            "mean_token_cosine_vs_fp32": 0.9985392689704895,
+            "max_absolute_error": 0.02706742286682129
+          },
+          {
+            "maxsim_int8": [
+              31.554738998413086,
+              30.06528091430664
+            ],
+            "maxsim_fp32": [
+              31.573488235473633,
+              30.05533790588379
+            ],
+            "same_top_document": true
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "colbertv2.0",
+      "repository": "colbert-ir/colbertv2.0",
+      "requested_repository": "colbert-ir/colbertv2.0",
+      "revision": "c1e84128e85ef755c096a95bdb06b47793b13acf",
+      "group": "05_colbert",
+      "kind": "colbert",
+      "source_onnx": "model.onnx",
+      "dimension": 128,
+      "quantization_mode": "weight_only",
+      "name": "colbert-ir-colbertv2.0-int8-standalone.zip",
+      "size": 98779386,
+      "sha256": "1b1c63d2402513f66f01f2b1710f6dcbdebb312525ed188f31aff904d19c1f4d",
+      "onnx_size": 110148020,
+      "onnx_sha256": "2bac1c1c1232b1b91a2d2c011246d7cc8394188d8537065704daea80c785ee7b",
+      "conversion": {
+        "method": "dynamic INT8, per-channel matrix weights; preserved trained token projection and normalization",
+        "rowwise_int8_embedding_tables": [
+          "bert.embeddings.word_embeddings.weight",
+          "bert.embeddings.position_embeddings.weight",
+          "bert.embeddings.token_type_embeddings.weight"
+        ],
+        "quantization": "W8A32: symmetric signed INT8 embedding rows and per-output-channel matrix weights; standard DequantizeLinear with FP32 matrix computation",
+        "mode": "weight_only",
+        "rejected_candidates": [],
+        "runtime_memory_note": "Runtime can expand/fold weights to FP32; reduced file size is not a guarantee of reduced runtime memory or faster INT8 arithmetic."
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 235452,
+          "INT8": 108951680
+        },
+        "quantized_weight_fraction": 0.9978435920452604,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "contextual": [
+                1,
+                11,
+                128
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.99942547082901,
+            "mean_token_cosine_vs_fp32": 0.9996539950370789,
+            "max_absolute_error": 0.008703354746103287
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "contextual": [
+                3,
+                15,
+                128
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.998754620552063,
+            "mean_token_cosine_vs_fp32": 0.9995553493499756,
+            "max_absolute_error": 0.012789025902748108
+          },
+          {
+            "maxsim_int8": [
+              28.978626251220703,
+              0.27335089445114136
+            ],
+            "maxsim_fp32": [
+              28.95076560974121,
+              0.25091245770454407
+            ],
+            "same_top_document": true
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    },
+    {
+      "key": "jina-colbert-v1-en",
+      "repository": "jinaai/jina-colbert-v1-en",
+      "requested_repository": "jinaai/jina-colbert-v1-en",
+      "revision": "31bb5a4d063a793f4aaaf6ecb9bf4ef1879ddf7d",
+      "group": "05_colbert",
+      "kind": "jina_colbert",
+      "source_onnx": null,
+      "dimension": 128,
+      "quantization_mode": "weight_only",
+      "name": "jinaai-jina-colbert-v1-en-int8-standalone.zip",
+      "size": 125055742,
+      "sha256": "71c8042b19b0d51ae9e6c3dd0277514c02d01a597dcf9f3a16f35e24cb0750bc",
+      "onnx_size": 138108697,
+      "onnx_sha256": "c6f1ef8ebc979db67d55a69436dfcd8552b461da172edcb6199188ec7ceae1ed",
+      "conversion": {
+        "code_repository": "jinaai/jina-bert-implementation",
+        "code_revision": "f3ec4cf7de7e561007f27c9efc7148b0bd713f81",
+        "export": "original JinaBERT ALiBi/GEGLU backbone and trained 128-dimensional linear projection, token L2 normalization; dynamically constructed equivalent ALiBi",
+        "pytorch_fp32_vs_onnx_fp32": [
+          {
+            "shape": [
+              1,
+              7,
+              128
+            ],
+            "max_absolute_error": 2.2724270820617676e-07
+          },
+          {
+            "shape": [
+              2,
+              12,
+              128
+            ],
+            "max_absolute_error": 3.627501428127289e-07
+          },
+          {
+            "shape": [
+              1,
+              256,
+              128
+            ],
+            "max_absolute_error": 4.991888999938965e-07
+          }
+        ],
+        "rowwise_int8_embedding_tables": [
+          "bert.embeddings.word_embeddings.weight",
+          "bert.embeddings.token_type_embeddings.weight"
+        ],
+        "quantization": "W8A32: symmetric signed INT8 embedding rows and per-output-channel matrix weights; standard DequantizeLinear with FP32 matrix computation",
+        "mode": "weight_only",
+        "rejected_candidates": [],
+        "runtime_memory_note": "Runtime can expand/fold weights to FP32; reduced file size is not a guarantee of reduced runtime memory or faster INT8 arithmetic."
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 234958,
+          "INT8": 136911488
+        },
+        "quantized_weight_fraction": 0.9982868094153895,
+        "provider": "CPUExecutionProvider",
+        "tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "contextual": [
+                1,
+                11,
+                128
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.9876454472541809,
+            "mean_token_cosine_vs_fp32": 0.997327446937561,
+            "max_absolute_error": 0.0364447683095932
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "contextual": [
+                3,
+                15,
+                128
+              ]
+            },
+            "min_token_cosine_vs_fp32": 0.9876454472541809,
+            "mean_token_cosine_vs_fp32": 0.9978913068771362,
+            "max_absolute_error": 0.0364447683095932
+          },
+          {
+            "maxsim_int8": [
+              29.461715698242188,
+              1.279111385345459
+            ],
+            "maxsim_fp32": [
+              29.53583335876465,
+              1.4862804412841797
+            ],
+            "same_top_document": true
+          }
+        ],
+        "dependencies": {
+          "numpy": "2.5.4",
+          "onnx": "1.23.2",
+          "onnxruntime": "1.32.0",
+          "tokenizers": "0.19.1",
+          "safetensors": "0.7.0"
+        }
+      }
+    }
+  ]
+}
