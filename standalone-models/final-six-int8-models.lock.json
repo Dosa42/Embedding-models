@@ -8,12 +8,12 @@
       "group": "06_sparse_splade",
       "pooling_config": "1_SpladePooling/config.json",
       "name": "naver-splade-cocondenser-ensembledistil-int8-standalone.zip",
-      "size": 119243745,
-      "sha256": "7ee1bbd21066baedcd68ece3bfefce49619dc7aa401abaee950b95071026c97a",
+      "size": 119243747,
+      "sha256": "5db9f904c72dc9537e6fc37a22d8d06c0072656e8e312ef103d04474c327e717",
       "onnx_size": 134384735,
       "conversion": {
         "method": "Original masked-LM weights exported with max(log1p(relu(logits)) * attention_mask) pooling",
-        "fp32_export_max_absolute_error": 4.069879651069641e-06,
+        "fp32_export_max_absolute_error": 3.931112587451935e-06,
         "mode": "weight_only",
         "rejected_candidates": [
           {
@@ -264,45 +264,42 @@
       "key": "flan-t5-small",
       "group": "07_seq2seq",
       "onnx_sources": [
-        "onnx/encoder_model_quantized.onnx",
-        "onnx/decoder_model_quantized.onnx"
+        "onnx/encoder_model.onnx",
+        "onnx/decoder_model.onnx"
       ],
       "prompts": [
         "Translate to German: The house is wonderful.",
         "Translate to German: I like apples."
       ],
+      "convert_weight_only": true,
       "name": "Xenova-flan-t5-small-int8-standalone.zip",
-      "size": 72747752,
-      "sha256": "3a9791fbb71e9a52b1d16a0c18ba679f1a7258320aaca18b945b4ca341e8d4ef",
-      "onnx_size": 94702445,
+      "size": 87482699,
+      "sha256": "086b41380ddb03283c4b4d4bbbf04609732ea0a53a16ca761ee96b9a1247fc1e",
+      "onnx_size": 94702370,
       "conversion": {
-        "method": "Upstream 8-bit ONNX graph bytes unchanged; normalized filenames",
-        "graph_mapping": {
-          "onnx/encoder_model_quantized.onnx": "onnx/encoder_model_int8.onnx",
-          "onnx/decoder_model_quantized.onnx": "onnx/decoder_model_int8.onnx"
-        }
+        "method": "W8A32 from original FP32 ONNX: signed INT8 embedding rows and per-channel matrix weights with FP32 computation",
+        "mode": "weight_only",
+        "reason": "Both upstream 8-bit Flan variants produced degraded generation in smoke examples"
       },
       "verification": {
         "graphs": {
           "onnx/decoder_model_int8.onnx": {
             "initializer_elements_by_dtype": {
-              "FLOAT": 92034,
-              "UINT8": 16449730,
-              "INT8": 41694592
+              "FLOAT": 124192,
+              "INT8": 58144320
             },
-            "quantized_weight_fraction": 0.9984196469985176,
-            "size": 58943318,
-            "sha256": "7f090cbd1281a9c896a070b424ceb18df45da6e78d16895a14c72387708db216"
+            "quantized_weight_fraction": 0.9978686258540462,
+            "size": 58906032,
+            "sha256": "7e58387e8c568f8933445472533fd63229f5e26f736493bf6e498dcc85fce6f2"
           },
           "onnx/encoder_model_int8.onnx": {
             "initializer_elements_by_dtype": {
-              "FLOAT": 42498,
-              "UINT8": 16449730,
-              "INT8": 18908160
+              "FLOAT": 74656,
+              "INT8": 35357888
             },
-            "quantized_weight_fraction": 0.998799504683395,
-            "size": 35759127,
-            "sha256": "968ce399b8dcdfd4c36833db51e9f78f327f7272ee9e2777fc2b3c8693208e90"
+            "quantized_weight_fraction": 0.9978930104482479,
+            "size": 35796338,
+            "sha256": "9792d9cff79b6ff9cffb2106f4fc2a6b99b1af5a2f9d6a0286a7ae0f690c432d"
           }
         },
         "tests": [
@@ -328,7 +325,31 @@
               true
             ],
             "steps": 6,
-            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+            "strategy": "greedy without KV cache; bounded by max_new_tokens",
+            "fp32_reference": {
+              "texts": [
+                "Das Haus ist sch\u00f6n."
+              ],
+              "token_ids": [
+                [
+                  0,
+                  644,
+                  4598,
+                  229,
+                  9685,
+                  5,
+                  1
+                ]
+              ],
+              "ended_with_eos": [
+                true
+              ],
+              "steps": 6,
+              "strategy": "greedy without KV cache; bounded by max_new_tokens"
+            },
+            "exact_text_matches": [
+              true
+            ]
           },
           {
             "inputs": [
@@ -336,8 +357,8 @@
               "Translate to German: I like apples."
             ],
             "texts": [
-              "Das Haus ist sehr sch\u00f6n.",
-              "Ich ernst, dass ich die Apples ich ich ernst."
+              "Das Haus ist sch\u00f6n.",
+              "Ich like apples."
             ],
             "token_ids": [
               [
@@ -345,62 +366,62 @@
                 644,
                 4598,
                 229,
-                1319,
                 9685,
                 5,
-                1,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
+                1
               ],
               [
                 0,
                 1674,
-                3,
-                49,
-                29,
-                7,
-                17,
-                6,
-                602,
-                3,
-                362,
-                67,
-                2184,
-                7,
-                3,
-                362,
-                3,
-                362,
-                3,
-                49,
-                29,
-                7,
-                17,
+                114,
+                16981,
                 5,
-                1
+                1,
+                0
               ]
             ],
             "ended_with_eos": [
               true,
               true
             ],
-            "steps": 24,
-            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+            "steps": 6,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens",
+            "fp32_reference": {
+              "texts": [
+                "Das Haus ist sch\u00f6n.",
+                "Ich like apples."
+              ],
+              "token_ids": [
+                [
+                  0,
+                  644,
+                  4598,
+                  229,
+                  9685,
+                  5,
+                  1
+                ],
+                [
+                  0,
+                  1674,
+                  114,
+                  16981,
+                  5,
+                  1,
+                  0
+                ]
+              ],
+              "ended_with_eos": [
+                true,
+                true
+              ],
+              "steps": 6,
+              "strategy": "greedy without KV cache; bounded by max_new_tokens"
+            },
+            "exact_text_matches": [
+              true,
+              true
+            ]
           }
         ]
       }
