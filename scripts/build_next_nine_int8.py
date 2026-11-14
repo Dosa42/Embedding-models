@@ -235,7 +235,7 @@ def build(spec, out):
                 (root / 'model.safetensors').unlink()
             else:
                 source = root / spec['source_onnx']
-                conversion = {'method': 'dynamic INT8, per-channel matrix weights; preserved trained token projection and normalization'}
+                conversion = {'method': 'INT8 weight quantization; preserved trained token projection and normalization'}
             prepared = Path(temp) / 'rowwise_embeddings.onnx'
             conversion['rowwise_int8_embedding_tables'] = quantize_embedding_tables(source, prepared)
             conversion['quantization'] = 'symmetric per-row signed INT8 embedding tables; dynamic per-channel QInt8 MatMul/Gemm'
@@ -319,6 +319,28 @@ def main():
                 raise ValueError('Package identity mismatch')
             if digest(args.output / package['name']) != package['sha256']:
                 raise ValueError('Collected ZIP hash mismatch')
+            conversion = package['conversion']
+            if conversion.get('mode') == 'weight_only' and conversion.get('method', '').startswith('dynamic INT8'):
+                conversion['method'] = 'INT8 weight quantization; preserved trained token projection and normalization'
+                archive_path = args.output / package['name']
+                replacement = archive_path.with_suffix('.tmp')
+                manifest_path = package['repository'] + '/STANDALONE-MANIFEST.json'
+                with zipfile.ZipFile(archive_path) as archive, zipfile.ZipFile(replacement, 'w', zipfile.ZIP_DEFLATED) as updated:
+                    manifest = json.loads(archive.read(manifest_path))
+                    manifest['conversion'] = conversion
+                    for member in archive.infolist():
+                        data = (json.dumps(manifest, indent=2) + '\n').encode() if member.filename == manifest_path else archive.read(member)
+                        updated.writestr(member, data)
+                with zipfile.ZipFile(replacement) as archive:
+                    if archive.testzip() is not None:
+                        raise ValueError('Metadata correction ZIP check failed')
+                    for item in manifest['files']:
+                        data = archive.read(package['repository'] + '/' + item['path'])
+                        if hashlib.sha256(data).hexdigest() != item['sha256']:
+                            raise ValueError('Model bytes changed during metadata correction')
+                replacement.replace(archive_path)
+                package.update(size=archive_path.stat().st_size, sha256=digest(archive_path))
+                print('Corrected descriptive method; verified all model and tokenizer bytes unchanged:', package['name'], flush=True)
         (args.output / 'next-nine-int8-models.lock.json').write_text(json.dumps({'schema': 1, 'packages': packages}, indent=2) + '\n')
         if os.environ.get('GITHUB_STEP_SUMMARY'):
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
