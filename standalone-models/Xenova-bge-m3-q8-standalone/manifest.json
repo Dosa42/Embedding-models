@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "archive": "Xenova-bge-m3-q8-standalone.zip",
+  "size": 449387908,
+  "sha256": "ca76f7ceb94cf190397baeb56f369d9fd6c0e29c7be5a3373730cbb9aa544b47",
+  "parts": [
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part001",
+      "size": 50331648,
+      "sha256": "203d9d63bbefb272addaa3955a3f3ec324df86731405678d6c18b500a459f023"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part002",
+      "size": 50331648,
+      "sha256": "638970fa96a16f5ccba00959460bc33d3e00b9d3ac3e8d6ac64410b3900e2263"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part003",
+      "size": 50331648,
+      "sha256": "78a585ad242ce9750277cf3df4c7bd8d18159027e2202435810f33f278e8341a"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part004",
+      "size": 50331648,
+      "sha256": "a6edb22489a0556dabcd6ec92c5afd664051b5486307a9e30dfe081b082e7b62"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part005",
+      "size": 50331648,
+      "sha256": "b4cabe9b64e8a9b0311ebcec6487efff8387e6d7006bb5c8bd57d27ccfc1a819"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part006",
+      "size": 50331648,
+      "sha256": "eccfe7e40517eb09408cdaa0eb469c692c57e2eccd6d1e7450b3d4ed47727483"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part007",
+      "size": 50331648,
+      "sha256": "56d30cb6997edc45389eabab3cf8fb9314aaa671f0a79c7fa933646ac7d5c30a"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part008",
+      "size": 50331648,
+      "sha256": "580b4827961e0ad0c8c7cab4d9069ad296fd8f27f88453e5f1c69461b5413afb"
+    },
+    {
+      "name": "Xenova-bge-m3-q8-standalone.zip.part009",
+      "size": 46734724,
+      "sha256": "b05c5d62f1e76426a1788ecb5349adbd4d7e6ded546e6a27602819fbc187c686"
+    }
+  ]
+}
