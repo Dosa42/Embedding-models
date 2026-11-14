@@ -1,0 +1,65 @@
+[
+  {
+    "repository": "naver/splade-cocondenser-ensembledistil",
+    "revision": "49cf4c7b0db5b870a401ddf5e2669993ef3699c7",
+    "key": "splade-cocondenser-ensembledistil",
+    "group": "06_sparse_splade",
+    "pooling_config": "1_SpladePooling/config.json"
+  },
+  {
+    "repository": "prithivida/Splade_PP_en_v1",
+    "revision": "762be6a7206e2f299182705972a65e5c46e62be2",
+    "key": "Splade_PP_en_v1",
+    "group": "06_sparse_splade",
+    "pooling_config": "1_SpladePooling/config.json"
+  },
+  {
+    "repository": "naver/efficient-splade-VI-BT-large-query",
+    "revision": "966075e1ffd29cc567b3900ab0e7760402b4a8e7",
+    "key": "efficient-splade-VI-BT-large-query",
+    "group": "06_sparse_splade",
+    "pooling_config": "query_1_SpladePooling/config.json"
+  },
+  {
+    "repository": "Xenova/flan-t5-small",
+    "revision": "311454e83bc784267fd7eef5940ee854144abbec",
+    "key": "flan-t5-small",
+    "group": "07_seq2seq",
+    "onnx_sources": [
+      "onnx/encoder_model_int8.onnx",
+      "onnx/decoder_model_int8.onnx"
+    ],
+    "prompts": [
+      "Translate to German: The house is wonderful.",
+      "Translate to German: I like apples."
+    ]
+  },
+  {
+    "repository": "Xenova/t5-small",
+    "revision": "4e0d91096b13cb313b43a14f35fdbb311a6d9728",
+    "key": "t5-small",
+    "group": "07_seq2seq",
+    "onnx_sources": [
+      "onnx/encoder_model_int8.onnx",
+      "onnx/decoder_model_quantized.onnx"
+    ],
+    "prompts": [
+      "translate English to German: The house is wonderful.",
+      "translate English to German: I like apples."
+    ]
+  },
+  {
+    "repository": "Xenova/opus-mt-nl-en",
+    "revision": "82c42d95d1508037cbe7172d85fd4e940a2f3584",
+    "key": "opus-mt-nl-en",
+    "group": "07_seq2seq",
+    "onnx_sources": [
+      "onnx/encoder_model_int8.onnx",
+      "onnx/decoder_model_quantized.onnx"
+    ],
+    "prompts": [
+      "Het huis is mooi.",
+      "Ik hou van appels."
+    ]
+  }
+]
