@@ -71,7 +71,8 @@
     "group": "05_colbert",
     "kind": "colbert",
     "source_onnx": "model.onnx",
-    "dimension": 128
+    "dimension": 128,
+    "quantization_mode": "weight_only"
   },
   {
     "key": "jina-colbert-v1-en",
@@ -81,6 +82,7 @@
     "group": "05_colbert",
     "kind": "jina_colbert",
     "source_onnx": null,
-    "dimension": 128
+    "dimension": 128,
+    "quantization_mode": "weight_only"
   }
 ]

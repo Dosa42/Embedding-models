@@ -67,6 +67,43 @@ def quantize_embedding_tables(source, target):
     return list(tables)
 
 
+def quantize_matrix_weights(source, target):
+    model = onnx.load(source)
+    tensors = {t.name: t for t in model.graph.initializer}
+    selected = {}
+    for graph in graphs(model.graph):
+        for node in graph.node:
+            if node.op_type not in ['MatMul', 'Gemm'] or node.input[1] not in tensors:
+                continue
+            tensor = tensors[node.input[1]]
+            if tensor.data_type != TensorProto.FLOAT or len(tensor.dims) != 2:
+                continue
+            transposed = next((a.i for a in node.attribute if a.name == 'transB'), 0)
+            axis = 0 if node.op_type == 'Gemm' and transposed else 1
+            if tensor.name in selected and selected[tensor.name] != axis:
+                raise ValueError('Conflicting matrix weight axes')
+            selected[tensor.name] = axis
+    if not selected:
+        raise ValueError('No matrix weights found')
+    new_tensors = []
+    dequantizers = []
+    for name, axis in selected.items():
+        weight = numpy_helper.to_array(tensors[name])
+        scale = np.maximum(np.max(np.abs(weight), axis=1 - axis) / 127, np.finfo(np.float32).tiny).astype(np.float32)
+        quantized = np.clip(np.rint(weight / (scale[None, :] if axis == 1 else scale[:, None])), -127, 127).astype(np.int8)
+        new_tensors.extend([numpy_helper.from_array(quantized, name + '_weight_int8'), numpy_helper.from_array(scale, name + '_weight_scale'), numpy_helper.from_array(np.zeros_like(scale, dtype=np.int8), name + '_weight_zero')])
+        dequantizers.append(helper.make_node('DequantizeLinear', [name + '_weight_int8', name + '_weight_scale', name + '_weight_zero'], [name], axis=axis))
+    retained = [t for t in model.graph.initializer if t.name not in selected]
+    del model.graph.initializer[:]
+    model.graph.initializer.extend(retained + new_tensors)
+    nodes = list(model.graph.node)
+    del model.graph.node[:]
+    model.graph.node.extend(dequantizers + nodes)
+    onnx.checker.check_model(model)
+    onnx.save(model, target)
+    return list(selected)
+
+
 def metadata(repo, revision):
     with urlopen(f'https://huggingface.co/api/models/{repo}/revision/{revision}?blobs=true', timeout=90) as response:
         return json.load(response)
@@ -158,7 +195,7 @@ def verify(root, target, spec, source=None):
             record.update(min_token_cosine_vs_fp32=float(cosine.min()), mean_token_cosine_vs_fp32=float(cosine.mean()), max_absolute_error=float(np.max(np.abs(a - b))))
             print('COLBERT_ACCURACY', json.dumps(record), flush=True)
             if cosine.min() < 0.98:
-                raise QuantizationAccuracyError('ColBERT INT8 token-vector cosine below 0.98')
+                raise QuantizationAccuracyError(f'ColBERT minimum token cosine {float(cosine.min()):.6f} below 0.98')
         tests.append(record)
     if spec['group'] == '05_colbert':
         query = colbert_inputs(runtime, tokenizer, ['Where is the Eiffel Tower?'], query=True)
@@ -204,16 +241,23 @@ def build(spec, out):
             conversion['quantization'] = 'symmetric per-row signed INT8 embedding tables; dynamic per-channel QInt8 MatMul/Gemm'
             reference = source
             rejected = []
-            for reduce_range in [False, True]:
-                quantize_dynamic(str(prepared), str(target), per_channel=True, reduce_range=reduce_range, weight_type=QuantType.QInt8, op_types_to_quantize=['MatMul', 'Gemm'], extra_options={'MatMulConstBOnly': True})
+            modes = ['weight_only'] if spec.get('quantization_mode') == 'weight_only' else ['dynamic_full', 'dynamic_reduced', 'weight_only']
+            for mode in modes:
+                if mode == 'weight_only':
+                    quantize_matrix_weights(prepared, target)
+                else:
+                    quantize_dynamic(str(prepared), str(target), per_channel=True, reduce_range=mode == 'dynamic_reduced', weight_type=QuantType.QInt8, op_types_to_quantize=['MatMul', 'Gemm'], extra_options={'MatMulConstBOnly': True})
                 try:
                     report = verify(root, target, spec, reference)
-                    conversion.update(reduce_range=reduce_range, rejected_candidates=rejected)
+                    conversion.update(mode=mode, rejected_candidates=rejected)
+                    if mode == 'weight_only':
+                        conversion['quantization'] = 'W8A32: symmetric signed INT8 embedding rows and per-output-channel matrix weights; standard DequantizeLinear with FP32 matrix computation'
+                        conversion['runtime_memory_note'] = 'Runtime can expand/fold weights to FP32; reduced file size is not a guarantee of reduced runtime memory or faster INT8 arithmetic.'
                     break
                 except QuantizationAccuracyError as error:
-                    rejected.append({'reduce_range': reduce_range, 'reason': str(error)})
+                    rejected.append({'mode': mode, 'reason': str(error)})
                     gc.collect()
-                    if reduce_range:
+                    if mode == modes[-1]:
                         raise
             prepared.unlink()
         else:
@@ -234,6 +278,8 @@ def build(spec, out):
         else:
             usage += 'Use colbert_inputs(query=True) for query marker and MASK augmentation; query=False for document marker. Output is a vector per token, retaining the trained projection. maxsim applies document punctuation/padding filtering and sums the maximum similarity for each query token. This is not a pooled sentence encoder.\n'
         usage += 'The INT8/UINT8/FLOAT tensor counts and exact validation scope are recorded in STANDALONE-MANIFEST.json. These CPU smoke checks do not constitute a task-quality benchmark or Android/Web validation.\n'
+        if conversion.get('mode') == 'weight_only':
+            usage += 'This model is W8A32: weights are stored as signed INT8, while activations/matrix computation remain FP32. The runtime may expand weights in memory. This preserves accuracy better than the rejected dynamic activation-quantized candidates; it does not promise full-INT8 arithmetic speedups.\n'
         (root / 'OFFLINE-USAGE.txt').write_text(usage)
         files = [{'path': p.relative_to(root).as_posix(), 'size': p.stat().st_size, 'sha256': digest(p)} for p in sorted(root.rglob('*')) if p.is_file()]
         manifest = {**spec, 'onnx_file': 'onnx/model_int8.onnx', 'conversion': conversion, 'verification': report, 'upstream_files': upstream, 'files': files}
