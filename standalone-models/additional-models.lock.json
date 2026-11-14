@@ -2,7 +2,7 @@
   "packages": [
     {
       "name": "Xenova-nli-deberta-v3-small-q8-standalone.zip",
-      "sha256": "2de2db403e5b6f18f96ae7d343acf6acac22c55ea18538ebd93ba4c5456fc7cc",
+      "sha256": "1bf6e5f74422b8ddae4816063507e2cb13d4760d46bd298320cd0295ccf81b55",
       "size": 124890881,
       "repository": "Xenova/nli-deberta-v3-small",
       "revision": "6bc2a55c7c0f7e2bc68de60bb248e523e2612abb",
@@ -10,7 +10,7 @@
     },
     {
       "name": "Xenova-nli-deberta-v3-small-fp16-standalone.zip",
-      "sha256": "99461ebf760dbc62e00d3697f65c91a555d4f65f692eda65c8315e5cab8f4b07",
+      "sha256": "961b7eda987f18eaf5aef7006671606f612fc5397d8a658fb31f78e0b7259850",
       "size": 265830967,
       "repository": "Xenova/nli-deberta-v3-small",
       "revision": "6bc2a55c7c0f7e2bc68de60bb248e523e2612abb",
@@ -18,15 +18,15 @@
     },
     {
       "name": "vectara-hallucination_evaluation_model-original-standalone.zip",
-      "sha256": "b81981acd16dee86647635832a60801703e0c68d67cc9bd40c7d9ef3eed6e838",
-      "size": 408479186,
+      "sha256": "e61bb87cebf90a90fd2fb0eddfa95db9c77a012360f374b92dcf86536f21e2ab",
+      "size": 409584203,
       "repository": "vectara/hallucination_evaluation_model",
       "revision": "de9a5e6ba9ba49531a022dba17e35ffeb2a6fad8",
       "variant": "original"
     },
     {
       "name": "Xenova-ms-marco-MiniLM-L-6-v2-q8-standalone.zip",
-      "sha256": "616781178cf95e73749430693042e8e349b82dae5d1406d48897a17ad706babc",
+      "sha256": "92856470e72354e8c9954bfb88936d02a9b958ccd267e406f050393dc1c0f37a",
       "size": 17211111,
       "repository": "Xenova/ms-marco-MiniLM-L-6-v2",
       "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
@@ -34,7 +34,7 @@
     },
     {
       "name": "Xenova-ms-marco-MiniLM-L-6-v2-fp16-standalone.zip",
-      "sha256": "e0194fda45101e8117532c62932489ac4bb4ebb52036284447cdb4eb982054d1",
+      "sha256": "95515086aa4b994836f7c487b3db37fa31732437e3d105ae44da69396d8a33ec",
       "size": 42486342,
       "repository": "Xenova/ms-marco-MiniLM-L-6-v2",
       "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
