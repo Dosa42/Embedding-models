@@ -54,6 +54,8 @@ jobs:
         run: |
           set -euo pipefail
           git lfs install --local
+          git config gc.auto 0
+          git config maintenance.auto false
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p standalone-models
@@ -68,9 +70,10 @@ jobs:
             git pull --rebase origin main
           fi
           python3 scripts/verify_repo_models.py --git-ref HEAD
-          git lfs fsck --objects HEAD
+          python3 scripts/verify_repo_models.py --lfs-cache
           # Upload every full object before changing the remote branch.
-          git lfs push origin HEAD
+          mapfile -t model_oids < <(python3 -c 'import json; print("\n".join(a["sha256"] for a in json.load(open("repo-model-release.lock.json"))["assets"]))')
+          git lfs push --object-id origin "${model_oids[@]}"
           git push origin HEAD:main
       - name: Check published model pointer manifest
         run: |
