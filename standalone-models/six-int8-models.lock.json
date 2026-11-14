@@ -1,0 +1,292 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "repository": "minishlab/potion-base-8M",
+      "requested_repository": "minishlab/potion-base-8M",
+      "revision": "bf8b056651a2c21b8d2565580b8569da283cab23",
+      "source_onnx": "onnx/model.onnx",
+      "group": "01_bi_encoders",
+      "kind": "potion",
+      "name": "minishlab-potion-base-8M-int8-standalone.zip",
+      "size": 7107661,
+      "sha256": "0134dbb960a67fe31a093ed6b4d582d2a2f8ee2b5e8620d00bdfe30ef7d0b7f9",
+      "onnx_size": 7681838,
+      "onnx_sha256": "45a23e5a9e69617f993f870832bf06caaa8d40b768804c89c1b80edfd01107a9",
+      "conversion": {
+        "method": "symmetric signed INT8 per embedding row; gather before dequantization",
+        "gathers_rewritten": 1
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT8": 7559168,
+          "FLOAT": 29528
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "embeddings": [
+                1,
+                256
+              ]
+            },
+            "min_cosine_vs_fp32": 0.9999696016311646,
+            "max_absolute_error": 0.0011935122311115265
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "embeddings": [
+                3,
+                256
+              ]
+            },
+            "min_cosine_vs_fp32": 0.9999696016311646,
+            "max_absolute_error": 0.0014151586219668388
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/bge-small-en-v1.5",
+      "requested_repository": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "source_onnx": "onnx/model_int8.onnx",
+      "group": "01_bi_encoders",
+      "kind": "embedding",
+      "name": "Xenova-bge-small-en-v1.5-int8-standalone.zip",
+      "size": 22363828,
+      "sha256": "1f33750ed679e3ee670920e6d0684bc0d98197d333d2d94d37af5e2ba72b2af6",
+      "onnx_size": 33760831,
+      "onnx_sha256": "bf64d05457cb391fa88d045faf5927a15ea36d96228ddf23ea970087afdc1197",
+      "conversion": {
+        "method": "publisher signed INT8 ONNX; unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 519,
+          "FLOAT": 60755,
+          "UINT8": 11917827,
+          "INT8": 21233736
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "last_hidden_state": [
+                1,
+                9,
+                384
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "last_hidden_state": [
+                3,
+                12,
+                384
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+      "requested_repository": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+      "revision": "2c4055b12046f11709e9df2c122e59ffbdc2f900",
+      "source_onnx": "onnx/model_int8.onnx",
+      "group": "01_bi_encoders",
+      "kind": "embedding",
+      "name": "Xenova-paraphrase-multilingual-MiniLM-L12-v2-int8-standalone.zip",
+      "size": 83160552,
+      "sha256": "13638c95858108c6166090954881e60ce18f1c51deea1ce9fdb65be1f9c313f0",
+      "onnx_size": 118054609,
+      "onnx_sha256": "d6ea442ff6a891daefed7c83b2f596fc5dc66bf697e4d006236f64f34bbcf4c8",
+      "conversion": {
+        "method": "publisher signed INT8 ONNX; unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 519,
+          "FLOAT": 60755,
+          "UINT8": 96211587,
+          "INT8": 21233736
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "last_hidden_state": [
+                1,
+                10,
+                384
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "last_hidden_state": [
+                3,
+                10,
+                384
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/ms-marco-TinyBERT-L-2-v2",
+      "requested_repository": "Xenova/ms-marco-TinyBERT-L-2-v2",
+      "revision": "b76bb5e1fefd66aa36cd108622d768e86c015ff1",
+      "source_onnx": "onnx/model_int8.onnx",
+      "group": "02_cross_encoders",
+      "kind": "reranker",
+      "name": "Xenova-ms-marco-TinyBERT-L-2-v2-int8-standalone.zip",
+      "size": 3558019,
+      "sha256": "4fa9f6ed293a7551eaac2e1e164b59bf8f6f09e829329576357b045e9c167cc4",
+      "onnx_size": 4475667,
+      "onnx_sha256": "f24d6dcf08df3d26b8fba3886942575b64856deba7ac2aa0962c2fb2ccd6d895",
+      "conversion": {
+        "method": "publisher signed INT8 ONNX; unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "INT64": 519,
+          "FLOAT": 3738,
+          "UINT8": 3972611,
+          "INT8": 409742
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "repository": "cross-encoder/ettin-reranker-17m-v1",
+      "requested_repository": "onnx-community/ettin-reranker-17m-v1",
+      "revision": "9e4aa35321a6dd1a43ca313f500c4b4f7cfb5cc6",
+      "source_onnx": "onnx/model_qint8_arm64.onnx",
+      "group": "02_cross_encoders",
+      "kind": "ettin",
+      "name": "cross-encoder-ettin-reranker-17m-v1-int8-standalone.zip",
+      "size": 14819060,
+      "sha256": "9e6178de31f0f68ffd7eac532cc3115464f13b74ea5d135c331584d2757dfbf1",
+      "onnx_size": 17393659,
+      "onnx_sha256": "a2c3a1177740789d734bd38b0b72938f475d35539af2c9bd9da40279d63a5dd3",
+      "conversion": {
+        "method": "publisher ARM64 INT8 backbone plus original CLS, Dense/GELU, LayerNorm and scoring head",
+        "head_precision": "FP32"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 84485,
+          "UINT8": 12894209,
+          "INT8": 3913728,
+          "INT64": 1
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "scores": [
+                1,
+                1
+              ]
+            },
+            "max_head_error_vs_numpy": 2.6711988065919456e-08
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "scores": [
+                3,
+                1
+              ]
+            },
+            "max_head_error_vs_numpy": 3.2475415370214478e-06
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/nli-deberta-v3-xsmall",
+      "requested_repository": "Xenova/nli-deberta-v3-xsmall",
+      "revision": "2a4f614a701367a02d51389039afc998faeda637",
+      "source_onnx": "onnx/model_int8.onnx",
+      "group": "02_cross_encoders",
+      "kind": "nli",
+      "name": "Xenova-nli-deberta-v3-xsmall-int8-standalone.zip",
+      "size": 69527604,
+      "sha256": "35849f7a93e974cf2207c326e28f5583ee3ac09dc04e1af580caed8cb04f10f7",
+      "onnx_size": 90409269,
+      "onnx_sha256": "e1878da6c3a689d7e7beb9703395880016c3585cd127f875be0acad02405737b",
+      "conversion": {
+        "method": "publisher signed INT8 ONNX; unchanged"
+      },
+      "verification": {
+        "initializer_elements_by_dtype": {
+          "FLOAT": 4779737,
+          "INT64": 23,
+          "UINT8": 49190401,
+          "INT8": 21382346
+        },
+        "runtime": "1.32.0",
+        "provider": "CPUExecutionProvider",
+        "smoke_tests": [
+          {
+            "batch": 1,
+            "outputs": {
+              "logits": [
+                1,
+                3
+              ]
+            }
+          },
+          {
+            "batch": 3,
+            "outputs": {
+              "logits": [
+                3,
+                3
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "validation_scope": "ONNX checker, signed INT8 weights, CPU inference for batch sizes 1 and 3; Potion FP32 comparison and Ettin head equivalence. Not a task-quality benchmark."
+}
