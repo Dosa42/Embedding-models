@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "packages": [
+    {
+      "repository": "naver/splade-cocondenser-ensembledistil",
+      "revision": "49cf4c7b0db5b870a401ddf5e2669993ef3699c7",
+      "key": "splade-cocondenser-ensembledistil",
+      "group": "06_sparse_splade",
+      "pooling_config": "1_SpladePooling/config.json",
+      "name": "naver-splade-cocondenser-ensembledistil-int8-standalone.zip",
+      "size": 119243745,
+      "sha256": "7ee1bbd21066baedcd68ece3bfefce49619dc7aa401abaee950b95071026c97a",
+      "onnx_size": 134384735,
+      "conversion": {
+        "method": "Original masked-LM weights exported with max(log1p(relu(logits)) * attention_mask) pooling",
+        "fp32_export_max_absolute_error": 4.069879651069641e-06,
+        "mode": "weight_only",
+        "rejected_candidates": [
+          {
+            "mode": "dynamic",
+            "error": "SPLADE accuracy threshold failed"
+          }
+        ],
+        "pooling_config": {
+          "pooling_strategy": "max",
+          "activation_function": "relu",
+          "word_embedding_dimension": null
+        }
+      },
+      "verification": {
+        "tests": [
+          {
+            "batch": 1,
+            "sequence": 10,
+            "min_cosine": 0.9990723133087158,
+            "top20_overlap": [
+              1.0
+            ],
+            "nonzero_counts": [
+              46
+            ]
+          },
+          {
+            "batch": 3,
+            "sequence": 13,
+            "min_cosine": 0.9983994364738464,
+            "top20_overlap": [
+              1.0,
+              0.95,
+              0.95
+            ],
+            "nonzero_counts": [
+              46,
+              42,
+              64
+            ],
+            "scores": [
+              23.83833885192871,
+              0.0
+            ],
+            "reference_scores": [
+              24.715953826904297,
+              0.0
+            ]
+          },
+          {
+            "batch": 2,
+            "sequence": 182,
+            "min_cosine": 0.9876625537872314,
+            "top20_overlap": [
+              0.85,
+              1.0
+            ],
+            "nonzero_counts": [
+              30,
+              53
+            ]
+          }
+        ],
+        "graphs": {
+          "onnx/model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 299440,
+              "INT8": 132915258
+            },
+            "quantized_weight_fraction": 0.9977521999862208,
+            "size": 134384735,
+            "sha256": "c6004fecf53bc07a139fa53c700a1d75133f2a4e3401e03ddb4ba7fd01db1433"
+          }
+        }
+      }
+    },
+    {
+      "repository": "prithivida/Splade_PP_en_v1",
+      "revision": "762be6a7206e2f299182705972a65e5c46e62be2",
+      "key": "Splade_PP_en_v1",
+      "group": "06_sparse_splade",
+      "pooling_config": "1_SpladePooling/config.json",
+      "name": "prithivida-Splade_PP_en_v1-int8-standalone.zip",
+      "size": 119730193,
+      "sha256": "9db59b1fc011fe737f4b5cd3eeaf9ac84898408930a83032cc62e79f8f69c1b3",
+      "onnx_size": 134566638,
+      "conversion": {
+        "method": "Original masked-LM weights exported with max(log1p(relu(logits)) * attention_mask) pooling",
+        "fp32_export_max_absolute_error": 5.155801773071289e-06,
+        "mode": "dynamic",
+        "rejected_candidates": [],
+        "pooling_config": {
+          "pooling_strategy": "max",
+          "activation_function": "relu",
+          "word_embedding_dimension": null
+        }
+      },
+      "verification": {
+        "tests": [
+          {
+            "batch": 1,
+            "sequence": 10,
+            "min_cosine": 0.9992325901985168,
+            "top20_overlap": [
+              0.95
+            ],
+            "nonzero_counts": [
+              26
+            ]
+          },
+          {
+            "batch": 3,
+            "sequence": 13,
+            "min_cosine": 0.9968694448471069,
+            "top20_overlap": [
+              1.0,
+              0.95,
+              0.95
+            ],
+            "nonzero_counts": [
+              25,
+              41,
+              25
+            ],
+            "scores": [
+              24.625892639160156,
+              0.0
+            ],
+            "reference_scores": [
+              25.345294952392578,
+              0.0
+            ]
+          },
+          {
+            "batch": 2,
+            "sequence": 182,
+            "min_cosine": 0.9810648560523987,
+            "top20_overlap": [
+              0.8,
+              0.95
+            ],
+            "nonzero_counts": [
+              13,
+              23
+            ]
+          }
+        ],
+        "graphs": {
+          "onnx/model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 299440,
+              "INT8": 132915258
+            },
+            "quantized_weight_fraction": 0.9977521999862208,
+            "size": 134566638,
+            "sha256": "d6e65539980fb7aa80d52f77419a6a2534370432ef4d39f592531aad62bf6b2e"
+          }
+        }
+      }
+    },
+    {
+      "repository": "naver/efficient-splade-VI-BT-large-query",
+      "revision": "966075e1ffd29cc567b3900ab0e7760402b4a8e7",
+      "key": "efficient-splade-VI-BT-large-query",
+      "group": "06_sparse_splade",
+      "pooling_config": "query_1_SpladePooling/config.json",
+      "name": "naver-efficient-splade-VI-BT-large-query-int8-standalone.zip",
+      "size": 8259695,
+      "sha256": "3e935d1f8500dab0937da68e518cda5028f86edba9a64429d0e4f2bdd15dece9",
+      "onnx_size": 8808183,
+      "conversion": {
+        "method": "Original masked-LM weights exported with max(log1p(relu(logits)) * attention_mask) pooling",
+        "fp32_export_max_absolute_error": 9.5367431640625e-07,
+        "mode": "dynamic",
+        "rejected_candidates": [],
+        "pooling_config": {
+          "pooling_strategy": "max",
+          "activation_function": "relu",
+          "word_embedding_dimension": null
+        }
+      },
+      "verification": {
+        "tests": [
+          {
+            "batch": 1,
+            "sequence": 10,
+            "min_cosine": 0.9998912811279297,
+            "top20_overlap": [
+              1.0
+            ],
+            "nonzero_counts": [
+              5
+            ]
+          },
+          {
+            "batch": 3,
+            "sequence": 13,
+            "min_cosine": 0.999643862247467,
+            "top20_overlap": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "nonzero_counts": [
+              5,
+              6,
+              5
+            ],
+            "scores": [
+              21.84278106689453,
+              0.0
+            ],
+            "reference_scores": [
+              21.73865509033203,
+              0.0
+            ]
+          },
+          {
+            "batch": 2,
+            "sequence": 182,
+            "min_cosine": 0.9992430806159973,
+            "top20_overlap": [
+              1.0,
+              1.0
+            ],
+            "nonzero_counts": [
+              3,
+              3
+            ]
+          }
+        ],
+        "graphs": {
+          "onnx/model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 98480,
+              "INT8": 8321978
+            },
+            "quantized_weight_fraction": 0.9883046741638044,
+            "size": 8808183,
+            "sha256": "d23803e944a4e1722f7bedc287df5f27c1af3ebb6f772b5821c71149df84ae5b"
+          }
+        }
+      }
+    },
+    {
+      "repository": "Xenova/flan-t5-small",
+      "revision": "311454e83bc784267fd7eef5940ee854144abbec",
+      "key": "flan-t5-small",
+      "group": "07_seq2seq",
+      "onnx_sources": [
+        "onnx/encoder_model_quantized.onnx",
+        "onnx/decoder_model_quantized.onnx"
+      ],
+      "prompts": [
+        "Translate to German: The house is wonderful.",
+        "Translate to German: I like apples."
+      ],
+      "name": "Xenova-flan-t5-small-int8-standalone.zip",
+      "size": 72747752,
+      "sha256": "3a9791fbb71e9a52b1d16a0c18ba679f1a7258320aaca18b945b4ca341e8d4ef",
+      "onnx_size": 94702445,
+      "conversion": {
+        "method": "Upstream 8-bit ONNX graph bytes unchanged; normalized filenames",
+        "graph_mapping": {
+          "onnx/encoder_model_quantized.onnx": "onnx/encoder_model_int8.onnx",
+          "onnx/decoder_model_quantized.onnx": "onnx/decoder_model_int8.onnx"
+        }
+      },
+      "verification": {
+        "graphs": {
+          "onnx/decoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 92034,
+              "UINT8": 16449730,
+              "INT8": 41694592
+            },
+            "quantized_weight_fraction": 0.9984196469985176,
+            "size": 58943318,
+            "sha256": "7f090cbd1281a9c896a070b424ceb18df45da6e78d16895a14c72387708db216"
+          },
+          "onnx/encoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 42498,
+              "UINT8": 16449730,
+              "INT8": 18908160
+            },
+            "quantized_weight_fraction": 0.998799504683395,
+            "size": 35759127,
+            "sha256": "968ce399b8dcdfd4c36833db51e9f78f327f7272ee9e2777fc2b3c8693208e90"
+          }
+        },
+        "tests": [
+          {
+            "inputs": [
+              "Translate to German: The house is wonderful."
+            ],
+            "texts": [
+              "Das Haus ist sch\u00f6n."
+            ],
+            "token_ids": [
+              [
+                0,
+                644,
+                4598,
+                229,
+                9685,
+                5,
+                1
+              ]
+            ],
+            "ended_with_eos": [
+              true
+            ],
+            "steps": 6,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          },
+          {
+            "inputs": [
+              "Translate to German: The house is wonderful.",
+              "Translate to German: I like apples."
+            ],
+            "texts": [
+              "Das Haus ist sehr sch\u00f6n.",
+              "Ich ernst, dass ich die Apples ich ich ernst."
+            ],
+            "token_ids": [
+              [
+                0,
+                644,
+                4598,
+                229,
+                1319,
+                9685,
+                5,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1674,
+                3,
+                49,
+                29,
+                7,
+                17,
+                6,
+                602,
+                3,
+                362,
+                67,
+                2184,
+                7,
+                3,
+                362,
+                3,
+                362,
+                3,
+                49,
+                29,
+                7,
+                17,
+                5,
+                1
+              ]
+            ],
+            "ended_with_eos": [
+              true,
+              true
+            ],
+            "steps": 24,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/t5-small",
+      "revision": "4e0d91096b13cb313b43a14f35fdbb311a6d9728",
+      "key": "t5-small",
+      "group": "07_seq2seq",
+      "onnx_sources": [
+        "onnx/encoder_model_int8.onnx",
+        "onnx/decoder_model_quantized.onnx"
+      ],
+      "prompts": [
+        "translate English to German: The house is wonderful.",
+        "translate English to German: I like apples."
+      ],
+      "name": "Xenova-t5-small-int8-standalone.zip",
+      "size": 52014348,
+      "sha256": "a84e6fdd00eb6b3c5e1af24d8bd0871d4fab37e897cc8c187ca2bb24e8f5c814",
+      "onnx_size": 77627408,
+      "conversion": {
+        "method": "Upstream 8-bit ONNX graph bytes unchanged; normalized filenames",
+        "graph_mapping": {
+          "onnx/encoder_model_int8.onnx": "onnx/encoder_model_int8.onnx",
+          "onnx/decoder_model_quantized.onnx": "onnx/decoder_model_int8.onnx"
+        }
+      },
+      "verification": {
+        "graphs": {
+          "onnx/decoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 49666,
+              "UINT8": 16449794,
+              "INT8": 25205760
+            },
+            "quantized_weight_fraction": 0.9988091178993901,
+            "size": 42154655,
+            "sha256": "fe424ae0e0f10b6219a2a839c894df55c64158897bfd7dda6db155179cdb6bf4"
+          },
+          "onnx/encoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "INT64": 13,
+              "FLOAT": 6700,
+              "UINT8": 16449794,
+              "INT8": 18874404
+            },
+            "quantized_weight_fraction": 0.9998103642879386,
+            "size": 35472753,
+            "sha256": "1ada693644efa0fabb5037caa7c8d98307b74310509f480faace264055fa09ea"
+          }
+        },
+        "tests": [
+          {
+            "inputs": [
+              "translate English to German: The house is wonderful."
+            ],
+            "texts": [
+              "Das Haus ist wunderbar."
+            ],
+            "token_ids": [
+              [
+                0,
+                644,
+                4598,
+                229,
+                19250,
+                5,
+                1
+              ]
+            ],
+            "ended_with_eos": [
+              true
+            ],
+            "steps": 6,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          },
+          {
+            "inputs": [
+              "translate English to German: The house is wonderful.",
+              "translate English to German: I like apples."
+            ],
+            "texts": [
+              "Das Haus ist wunderbar.",
+              "Ich mag pfel."
+            ],
+            "token_ids": [
+              [
+                0,
+                644,
+                4598,
+                229,
+                19250,
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                1674,
+                6396,
+                3,
+                2,
+                17433,
+                5,
+                1
+              ]
+            ],
+            "ended_with_eos": [
+              true,
+              true
+            ],
+            "steps": 7,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          }
+        ]
+      }
+    },
+    {
+      "repository": "Xenova/opus-mt-nl-en",
+      "revision": "82c42d95d1508037cbe7172d85fd4e940a2f3584",
+      "key": "opus-mt-nl-en",
+      "group": "07_seq2seq",
+      "onnx_sources": [
+        "onnx/encoder_model_int8.onnx",
+        "onnx/decoder_model_quantized.onnx"
+      ],
+      "prompts": [
+        "Het huis is mooi.",
+        "Ik hou van appels."
+      ],
+      "name": "Xenova-opus-mt-nl-en-int8-standalone.zip",
+      "size": 73778011,
+      "sha256": "db4c4fb40d2fa378b7ac1c98c2dd520ee8aec9f6c9393a026b2604b54454141b",
+      "onnx_size": 114652410,
+      "conversion": {
+        "method": "Upstream 8-bit ONNX graph bytes unchanged; normalized filenames",
+        "graph_mapping": {
+          "onnx/encoder_model_int8.onnx": "onnx/encoder_model_int8.onnx",
+          "onnx/decoder_model_quantized.onnx": "onnx/decoder_model_int8.onnx"
+        }
+      },
+      "verification": {
+        "graphs": {
+          "onnx/decoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "FLOAT": 165334,
+              "UINT8": 34580482,
+              "INT8": 25205760
+            },
+            "quantized_weight_fraction": 0.9972422076110226,
+            "size": 60888034,
+            "sha256": "d70da1130c5a0746f8f18081854511b5a0671e563a56b4dd7870b2eb922944cc"
+          },
+          "onnx/encoder_model_int8.onnx": {
+            "initializer_elements_by_dtype": {
+              "INT64": 16,
+              "FLOAT": 39980,
+              "UINT8": 34580482,
+              "INT8": 18874404
+            },
+            "quantized_weight_fraction": 0.9992526385616145,
+            "size": 53764376,
+            "sha256": "0f978e5657b9134a08e57626301529e6c202e1bfbb9d3f963b780fb6f9a8270c"
+          }
+        },
+        "tests": [
+          {
+            "inputs": [
+              "Het huis is mooi."
+            ],
+            "texts": [
+              "The house is beautiful."
+            ],
+            "token_ids": [
+              [
+                67027,
+                45,
+                828,
+                12,
+                1723,
+                2,
+                0
+              ]
+            ],
+            "ended_with_eos": [
+              true
+            ],
+            "steps": 6,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          },
+          {
+            "inputs": [
+              "Het huis is mooi.",
+              "Ik hou van appels."
+            ],
+            "texts": [
+              "The house is beautiful.",
+              "I like apples."
+            ],
+            "token_ids": [
+              [
+                67027,
+                45,
+                828,
+                12,
+                1723,
+                2,
+                0
+              ],
+              [
+                67027,
+                22,
+                159,
+                27156,
+                2,
+                0,
+                67027
+              ]
+            ],
+            "ended_with_eos": [
+              true,
+              true
+            ],
+            "steps": 6,
+            "strategy": "greedy without KV cache; bounded by max_new_tokens"
+          }
+        ]
+      }
+    }
+  ]
+}
