@@ -26,8 +26,8 @@
     "key": "flan-t5-small",
     "group": "07_seq2seq",
     "onnx_sources": [
-      "onnx/encoder_model_int8.onnx",
-      "onnx/decoder_model_int8.onnx"
+      "onnx/encoder_model_quantized.onnx",
+      "onnx/decoder_model_quantized.onnx"
     ],
     "prompts": [
       "Translate to German: The house is wonderful.",

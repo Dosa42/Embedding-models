@@ -13,9 +13,29 @@ def session(path):
     return ort.InferenceSession(str(path), options, providers=['CPUExecutionProvider'])
 
 
+class MarianDecoder:
+    def __init__(self, root, config):
+        import sentencepiece as spm
+        self.processor = spm.SentencePieceProcessor(model_file=str(root / 'target.spm'))
+        self.tokens = {value: key for key, value in json.loads((root / 'vocab.json').read_text()).items()}
+        self.special = {config['pad_token_id'], config['eos_token_id'], config['decoder_start_token_id']}
+
+    def decode_batch(self, rows, skip_special_tokens=True):
+        return [self.processor.decode_pieces([self.tokens[i] for i in row if not skip_special_tokens or i not in self.special]) for row in rows]
+
+
 def encode(root, texts):
     root = Path(root)
     config = json.loads((root / 'config.json').read_text())
+    if config.get('model_type') == 'marian':
+        import sentencepiece as spm
+        processor = spm.SentencePieceProcessor(model_file=str(root / 'source.spm'))
+        vocab = json.loads((root / 'vocab.json').read_text())
+        rows = [[vocab.get(piece, vocab['<unk>']) for piece in processor.encode_as_pieces(text)][:255] + [config['eos_token_id']] for text in texts]
+        length = max(map(len, rows))
+        data = {'input_ids': np.asarray([row + [config['pad_token_id']] * (length - len(row)) for row in rows], dtype=np.int64), 'attention_mask': np.asarray([[1] * len(row) + [0] * (length - len(row)) for row in rows], dtype=np.int64)}
+        data['token_type_ids'] = np.zeros_like(data['input_ids'])
+        return MarianDecoder(root, config), data
     tokenizer = Tokenizer.from_file(str(root / 'tokenizer.json'))
     tokenizer.enable_truncation(max_length=256)
     tokenizer.enable_padding(pad_id=config.get('pad_token_id', 0), pad_token=tokenizer.id_to_token(config.get('pad_token_id', 0)))

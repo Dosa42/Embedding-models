@@ -130,11 +130,11 @@ def build(spec, out):
             for texts in [spec['prompts'][:1], spec['prompts']]:
                 result = generate(root, texts)
                 print('GENERATION', json.dumps(result), flush=True)
-                if not all(result['texts']) or not all(result['ended_with_eos']):
+                if not all(t.strip() for t in result['texts']) or not all(result['ended_with_eos']):
                     raise ValueError('Generation did not produce nonempty completed text')
                 verification['tests'].append({'inputs': texts, **result})
         shutil.copyfile(Path(__file__).with_name('final_six_runtime.py'), root / 'onnx_runtime.py')
-        usage = 'Offline CPU runtime: pip install numpy tokenizers onnxruntime\n'
+        usage = 'Offline CPU runtime: pip install numpy tokenizers onnxruntime sentencepiece\n'
         usage += 'python onnx_runtime.py . "Your text" --task ' + ('sparse' if sparse_model else 'generate') + '\n'
         usage += 'All graphs have predominantly 8-bit weights; tensor types and tests are recorded in STANDALONE-MANIFEST.json. Smoke tests are not retrieval/generation benchmarks or Android/Web validation.\n'
         if sparse_model:
