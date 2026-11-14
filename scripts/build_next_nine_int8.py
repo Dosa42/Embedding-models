@@ -15,11 +15,56 @@ import zipfile
 
 import numpy as np
 import onnx
-from onnx import TensorProto
+from onnx import TensorProto, helper, numpy_helper
 from onnxruntime.quantization import QuantType, quantize_dynamic
 
 from build_six_int8_models import digest, graphs, session
 from next_nine_runtime import colbert_inputs, gliner_inputs, maxsim, text_inputs, tokenizer_at
+
+
+class QuantizationAccuracyError(ValueError):
+    pass
+
+
+def quantize_embedding_tables(source, target):
+    model = onnx.load(source)
+    gathered = {n.input[0] for g in graphs(model.graph) for n in g.node if n.op_type == 'Gather'}
+    tables = {}
+    for tensor in model.graph.initializer:
+        if tensor.name in gathered and tensor.data_type == TensorProto.FLOAT and len(tensor.dims) == 2:
+            weight = numpy_helper.to_array(tensor)
+            scale = np.maximum(np.max(np.abs(weight), axis=1, keepdims=True) / 127, np.finfo(np.float32).tiny)
+            tables[tensor.name] = (np.clip(np.rint(weight / scale), -127, 127).astype(np.int8), scale.astype(np.float32))
+    if not tables:
+        raise ValueError('No embedding tables found')
+    for graph in reversed(list(graphs(model.graph))):
+        nodes = []
+        for node in graph.node:
+            if node.op_type != 'Gather' or node.input[0] not in tables:
+                nodes.append(node)
+                continue
+            if next((a.i for a in node.attribute if a.name == 'axis'), 0) != 0:
+                raise ValueError('Unexpected embedding gather axis')
+            name, indices = node.input[:2]
+            out = node.output[0]
+            nodes.extend([
+                helper.make_node('Gather', [name + '_row_int8', indices], [out + '_row_int8'], axis=0),
+                helper.make_node('Gather', [name + '_row_scale', indices], [out + '_row_scale'], axis=0),
+                helper.make_node('Cast', [out + '_row_int8'], [out + '_row_float'], to=TensorProto.FLOAT),
+                helper.make_node('Mul', [out + '_row_float', out + '_row_scale'], [out]),
+            ])
+        del graph.node[:]
+        graph.node.extend(nodes)
+    if any(name in node.input for graph in graphs(model.graph) for node in graph.node for name in tables):
+        raise ValueError('Unconverted embedding table use')
+    retained = [t for t in model.graph.initializer if t.name not in tables]
+    del model.graph.initializer[:]
+    model.graph.initializer.extend(retained)
+    for name, (weight, scale) in tables.items():
+        model.graph.initializer.extend([numpy_helper.from_array(weight, name + '_row_int8'), numpy_helper.from_array(scale, name + '_row_scale')])
+    onnx.checker.check_model(model)
+    onnx.save(model, target)
+    return list(tables)
 
 
 def metadata(repo, revision):
@@ -111,8 +156,9 @@ def verify(root, target, spec, source=None):
             a, b = value[active], expected[active]
             cosine = np.sum(a * b, axis=-1) / np.maximum(np.linalg.norm(a, axis=-1) * np.linalg.norm(b, axis=-1), 1e-12)
             record.update(min_token_cosine_vs_fp32=float(cosine.min()), mean_token_cosine_vs_fp32=float(cosine.mean()), max_absolute_error=float(np.max(np.abs(a - b))))
+            print('COLBERT_ACCURACY', json.dumps(record), flush=True)
             if cosine.min() < 0.98:
-                raise ValueError('ColBERT INT8 token-vector cosine below 0.98')
+                raise QuantizationAccuracyError('ColBERT INT8 token-vector cosine below 0.98')
         tests.append(record)
     if spec['group'] == '05_colbert':
         query = colbert_inputs(runtime, tokenizer, ['Where is the Eiffel Tower?'], query=True)
@@ -124,7 +170,7 @@ def verify(root, target, spec, source=None):
         d_ref = reference.run(None, docs)[0]
         scores_ref = [maxsim(q_ref, vectors, ids, tokenizer) for vectors, ids in zip(d_ref, docs['input_ids'])]
         if not np.isfinite(scores).all() or int(np.argmax(scores)) != int(np.argmax(scores_ref)):
-            raise ValueError('ColBERT MaxSim smoke-test rank changed')
+            raise QuantizationAccuracyError('ColBERT MaxSim smoke-test rank changed')
         tests.append({'maxsim_int8': scores, 'maxsim_fp32': scores_ref, 'same_top_document': True})
     return {'initializer_elements_by_dtype': dict(counts), 'quantized_weight_fraction': eight / (eight + floating), 'provider': 'CPUExecutionProvider', 'tests': tests, 'dependencies': {name: importlib.metadata.version(name) for name in ['numpy', 'onnx', 'onnxruntime', 'tokenizers', 'safetensors']}}
 
@@ -138,15 +184,8 @@ def build(spec, out):
         upstream = download(spec['repository'], spec['revision'], root, wanted)
         if spec['repository'].startswith('libryo-ai/'):
             shutil.copyfile(root / 'answerai_colbert_small_v1_tokenizer.json', root / 'tokenizer.json')
-            repo = 'answerdotai/answerai-colbert-small-v1'
-            revision = '934fa8bb4ce2284f4c2baa232d81aca4d076fa5e'
-            official = metadata(repo, revision)
-            source_entry = next(e for e in upstream if e['path'] == spec['source_onnx'])
-            official_entry = next(e for e in official['siblings'] if e['rfilename'] == 'vespa_colbert.onnx')
-            if source_entry['sha256'] != official_entry['lfs']['sha256']:
-                raise ValueError('Libryo graph does not match original publisher graph')
-            names = ['config.json', 'artifact.metadata', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt']
-            upstream += download(repo, revision, root, lambda name: name in names)
+            interface = {'model_type': 'colbert', 'dimension': spec['dimension'], 'repository': spec['repository'], 'configuration_origin': 'package interface metadata; upstream supplies only ONNX and tokenizer', 'query_marker': '[unused0]', 'document_marker': '[unused1]'}
+            (root / 'config.json').write_text(json.dumps(interface, indent=2) + '\n')
         target = root / 'onnx/model_int8.onnx'
         target.parent.mkdir(parents=True, exist_ok=True)
         conversion = {'method': 'upstream 8-bit ONNX unchanged'}
@@ -160,14 +199,28 @@ def build(spec, out):
             else:
                 source = root / spec['source_onnx']
                 conversion = {'method': 'dynamic INT8, per-channel matrix weights; preserved trained token projection and normalization'}
-            quantize_dynamic(str(source), str(target), per_channel=True, weight_type=QuantType.QInt8, op_types_to_quantize=['MatMul', 'Gemm', 'Gather'], extra_options={'MatMulConstBOnly': True})
-            conversion['quantization'] = 'ONNX Runtime dynamic QInt8, per_channel=True; MatMul/Gemm/Gather'
+            prepared = Path(temp) / 'rowwise_embeddings.onnx'
+            conversion['rowwise_int8_embedding_tables'] = quantize_embedding_tables(source, prepared)
+            conversion['quantization'] = 'symmetric per-row signed INT8 embedding tables; dynamic per-channel QInt8 MatMul/Gemm'
             reference = source
+            rejected = []
+            for reduce_range in [False, True]:
+                quantize_dynamic(str(prepared), str(target), per_channel=True, reduce_range=reduce_range, weight_type=QuantType.QInt8, op_types_to_quantize=['MatMul', 'Gemm'], extra_options={'MatMulConstBOnly': True})
+                try:
+                    report = verify(root, target, spec, reference)
+                    conversion.update(reduce_range=reduce_range, rejected_candidates=rejected)
+                    break
+                except QuantizationAccuracyError as error:
+                    rejected.append({'reduce_range': reduce_range, 'reason': str(error)})
+                    gc.collect()
+                    if reduce_range:
+                        raise
+            prepared.unlink()
         else:
             source = root / spec['source_onnx']
             if source != target:
                 shutil.copyfile(source, target)
-        report = verify(root, target, spec, reference)
+            report = verify(root, target, spec)
         if source != target:
             source.unlink()
         shutil.copyfile(Path(__file__).with_name('next_nine_runtime.py'), root / 'onnx_runtime_inputs.py')

@@ -36,6 +36,7 @@ def export(root, target):
     config_class = get_class_from_dynamic_module('configuration_bert.JinaBertConfig', CODE_REPO, revision=CODE_REVISION)
     model_class = get_class_from_dynamic_module('modeling_bert.JinaBertModel', CODE_REPO, revision=CODE_REVISION)
     data = json.loads((root / 'config.json').read_text())
+    data['_name_or_path'] = str(root)
     data['max_position_embeddings'] = 64
     data['attn_implementation'] = 'eager'
     config = config_class(**data)
