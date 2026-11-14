@@ -1,5 +1,22 @@
 # Embedding models
 
+## ZIP ingestion naar ChromaDB
+
+Upload een ZIP naar [standalone-models/ingestion target/](standalone-models/ingestion%20target/),
+open **Actions**, kies het gewenste model en druk op **Run workflow**:
+
+- [Ingest ZIP — BGE-M3](https://github.com/Dosa42/Embedding-models/actions/workflows/ingest-bge-m3.yml)
+- [Ingest ZIP — E5 base v2](https://github.com/Dosa42/Embedding-models/actions/workflows/ingest-e5-base-v2.yml)
+- [Ingest ZIP — E5 large v2](https://github.com/Dosa42/Embedding-models/actions/workflows/ingest-e5-large-v2.yml)
+
+Standaard: **q8**, chunks van 384 tokens, overlap 64. Iedere run pakt de bron-ZIP
+tijdelijk uit, gebruikt de bijbehorende tokenizer en ONNX-gewichten, en publiceert
+een **native ChromaDB-database** met chunks, embeddings en bronverwijzingen als
+nieuwe GitHub Release. De release bevat de volledige Chroma-opslagmap in één ZIP.
+De bron-ZIP blijft staan; de database wordt niet naar Git teruggeschreven.
+Zie [de ingestion-handleiding](ingestion/README.md) voor uploadlimieten, instellingen,
+ondersteunde documenten en zoeken in de database.
+
 ## Xenova BGE-M3 and E5-v2 — complete q8 / FP16 files
 
 [standalone-models/](standalone-models/) contains **six complete ZIP files**, one

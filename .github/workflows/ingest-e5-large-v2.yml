@@ -1,0 +1,45 @@
+name: Ingest ZIP — E5 large v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      zip_filename:
+        description: 'ZIP-bestandsnaam in ingestion target (leeg = de enige ZIP)'
+        required: false
+        default: ''
+        type: string
+      dtype:
+        description: 'Modelprecisie (q8 aanbevolen voor CPU)'
+        required: true
+        default: q8
+        type: choice
+        options: [q8, fp16]
+      chunk_tokens:
+        description: 'Tokens per chunk (standaard 384)'
+        required: true
+        default: 384
+        type: number
+      overlap:
+        description: 'Overlappende tokens (kleiner dan chunk_tokens)'
+        required: true
+        default: 64
+        type: number
+      batch_size:
+        description: 'Chunks per inference-batch (1–16)'
+        required: true
+        default: 4
+        type: number
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    uses: ./.github/workflows/ingestion-engine.yml
+    with:
+      model: e5-large-v2
+      zip_filename: ${{ inputs.zip_filename }}
+      dtype: ${{ inputs.dtype }}
+      chunk_tokens: ${{ inputs.chunk_tokens }}
+      overlap: ${{ inputs.overlap }}
+      batch_size: ${{ inputs.batch_size }}
