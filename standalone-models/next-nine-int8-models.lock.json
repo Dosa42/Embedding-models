@@ -458,12 +458,12 @@
       "dimension": 128,
       "quantization_mode": "weight_only",
       "name": "colbert-ir-colbertv2.0-int8-standalone.zip",
-      "size": 98779386,
-      "sha256": "1b1c63d2402513f66f01f2b1710f6dcbdebb312525ed188f31aff904d19c1f4d",
+      "size": 98779380,
+      "sha256": "c34c965cb5382c55099002039642efd7e89fdfd63b7d5516f994122535c7ca8a",
       "onnx_size": 110148020,
       "onnx_sha256": "2bac1c1c1232b1b91a2d2c011246d7cc8394188d8537065704daea80c785ee7b",
       "conversion": {
-        "method": "dynamic INT8, per-channel matrix weights; preserved trained token projection and normalization",
+        "method": "INT8 weight quantization; preserved trained token projection and normalization",
         "rowwise_int8_embedding_tables": [
           "bert.embeddings.word_embeddings.weight",
           "bert.embeddings.position_embeddings.weight",
