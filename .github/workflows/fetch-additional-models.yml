@@ -1,0 +1,46 @@
+name: Download additional standalone models
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fetch-additional-models.yml'
+      - 'scripts/fetch_additional_models.py'
+permissions:
+  contents: write
+concurrency:
+  group: additional-standalone-models
+  cancel-in-progress: false
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GIT_LFS_SKIP_SMUDGE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          filter: blob:none
+          sparse-checkout: |
+            scripts
+      - name: Download and verify model packages
+        run: python3 scripts/fetch_additional_models.py
+      - name: Store complete ZIPs alongside existing models
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 -c 'import json; print("\n".join(p["name"] for p in json.load(open("standalone-models/additional-models.lock.json"))["packages"]))' > "$RUNNER_TEMP/additional-assets.txt"
+          while IFS= read -r asset; do
+            git add --sparse -- "standalone-models/$asset"
+          done < "$RUNNER_TEMP/additional-assets.txt"
+          git add --sparse standalone-models/additional-models.lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add NLI, hallucination evaluation and reranker standalone model packages'
+            git pull --rebase origin main
+            git lfs push origin HEAD
+            git push origin HEAD:main
+          fi
