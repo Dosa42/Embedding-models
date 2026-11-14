@@ -1,0 +1,52 @@
+name: Fetch Xenova ONNX models
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fetch-xenova-models.yml'
+      - 'scripts/fetch_xenova_models.py'
+      - 'tests/test_fetch_xenova_models.py'
+      - 'xenova-models.lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fetch-xenova-models
+  cancel-in-progress: false
+
+jobs:
+  fetch-and-release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Check out downloader and pinned manifest
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            scripts
+            tests
+          fetch-depth: 1
+      - name: Test downloader integrity checks
+        run: python3 -m unittest discover -s tests -p 'test_fetch_xenova_models.py' -v
+      - name: Download, verify and package all six variants
+        run: python3 scripts/fetch_xenova_models.py --dtype all
+      - name: Publish complete model packages as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="xenova-onnx-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+          gh release create "$tag" --target "$GITHUB_SHA" --draft \
+            --title "Xenova ONNX — q8 and FP16 ($tag)" --notes-file dist/RELEASE.md
+          gh release upload "$tag" dist/*.zip dist/SHA256SUMS.txt dist/xenova-models.lock.json
+          gh release edit "$tag" --draft=false --latest
+          printf '## Model downloads\n\nhttps://github.com/%s/releases/tag/%s\n' "$GITHUB_REPOSITORY" "$tag" >> "$GITHUB_STEP_SUMMARY"

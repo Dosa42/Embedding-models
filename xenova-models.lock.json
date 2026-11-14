@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "README.md",
+      "size": 3076,
+      "sha256": "dd0589fb62a392046192696d78fa8637db353eadca2df743ed3919a3163abec5"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "config.json",
+      "size": 770,
+      "sha256": "734a79bf12d388c1467a4e3ab625f45de7f6906cffcfb93a1eca1787504bed95"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "onnx/model_fp16.onnx",
+      "size": 1133992936,
+      "sha256": "4f1a646a3d4f39985589e9991a717044ede8278617fe55e3d246838bc05055e9"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "onnx/model_quantized.onnx",
+      "size": 569694530,
+      "sha256": "0826f8c1ab9edf1801db86c61919d4d108e8bfc0b809ec823ad366882ff0b77d"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "quantize_config.json",
+      "size": 834,
+      "sha256": "4d98142624026cf78a40b36896ae1b1bada4faf185b77784a03b6995324aa176"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "sentencepiece.bpe.model",
+      "size": 5069051,
+      "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "special_tokens_map.json",
+      "size": 964,
+      "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "tokenizer.json",
+      "size": 17082821,
+      "sha256": "6710678b12670bc442b99edc952c4d996ae309a7020c1fa0096dd245c2faf790"
+    },
+    {
+      "repo": "Xenova/bge-m3",
+      "revision": "4de13258303883538bd53b696b452bf8099f0858",
+      "path": "tokenizer_config.json",
+      "size": 1173,
+      "sha256": "7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "README.md",
+      "size": 1044,
+      "sha256": "4aae843e189d86c14eca23506f7e69c3ea069ac13f3f47b9f1072c88d21af4de"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "config.json",
+      "size": 632,
+      "sha256": "eedcf6117fdeb234759a2d2ee684feaef6cb4891a5c54eb4504c61538e029fa4"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "onnx/model_fp16.onnx",
+      "size": 218108177,
+      "sha256": "823ade37a9d175334898ece493e2987984a56a5e3cf1b8c331bd8a6fabe9869c"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "onnx/model_quantized.onnx",
+      "size": 110083279,
+      "sha256": "d0a7aadf8227f5212695488d99de54523678f5f9ecfb070f2b58cc76cd84d882"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "quant_config.json",
+      "size": 674,
+      "sha256": "d095592caf5082f2ff05487075f11ba8cfc4b9f392d8d1eae6fb92d71191d87f"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "special_tokens_map.json",
+      "size": 125,
+      "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "tokenizer.json",
+      "size": 711396,
+      "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "tokenizer_config.json",
+      "size": 314,
+      "sha256": "ae83fa6ca0333117ff12606020af925d648667ef70d92ff7f27d781ba0ca4544"
+    },
+    {
+      "repo": "Xenova/e5-base-v2",
+      "revision": "21f8d0e36fdfe76e6a023802dfb293fc6d750ad1",
+      "path": "vocab.txt",
+      "size": 231508,
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "README.md",
+      "size": 1047,
+      "sha256": "7e9ff976cdb409e83eee8feef61aa282c217e6b7389715bde96965c96b7e6cdb"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "config.json",
+      "size": 599,
+      "sha256": "25c3e538f9b141bffb36cdec488803e9e940e1d19356480b8c0368aae6f937ff"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "onnx/model_fp16.onnx",
+      "size": 668828712,
+      "sha256": "d269a78d3c58c9832c43b5be92279b5a5a4e6d60d08b1d36c1e4bc65888b3ceb"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "onnx/model_quantized.onnx",
+      "size": 336983104,
+      "sha256": "80779f47fd485869cb5d12338e3956cab089075f136c39498f67d53bcc41b357"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "quant_config.json",
+      "size": 674,
+      "sha256": "c574a2f74014947ff7bda976268b84b0147ad1b9662419d5cf0161d3a593cd25"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "special_tokens_map.json",
+      "size": 125,
+      "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "tokenizer.json",
+      "size": 711396,
+      "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "tokenizer_config.json",
+      "size": 314,
+      "sha256": "ae83fa6ca0333117ff12606020af925d648667ef70d92ff7f27d781ba0ca4544"
+    },
+    {
+      "repo": "Xenova/e5-large-v2",
+      "revision": "840fd2207f68e253697ed85392a482ff7657ad11",
+      "path": "vocab.txt",
+      "size": 231508,
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    }
+  ]
+}

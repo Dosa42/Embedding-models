@@ -1,0 +1,5 @@
+# Downloaded Xenova models and generated release packages
+/models/
+/dist/
+__pycache__/
+*.pyc
