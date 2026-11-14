@@ -26,13 +26,14 @@
     "key": "flan-t5-small",
     "group": "07_seq2seq",
     "onnx_sources": [
-      "onnx/encoder_model_quantized.onnx",
-      "onnx/decoder_model_quantized.onnx"
+      "onnx/encoder_model.onnx",
+      "onnx/decoder_model.onnx"
     ],
     "prompts": [
       "Translate to German: The house is wonderful.",
       "Translate to German: I like apples."
-    ]
+    ],
+    "convert_weight_only": true
   },
   {
     "repository": "Xenova/t5-small",
