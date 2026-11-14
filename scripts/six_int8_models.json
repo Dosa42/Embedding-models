@@ -1,0 +1,50 @@
+[
+  {
+    "repository": "minishlab/potion-base-8M",
+    "requested_repository": "minishlab/potion-base-8M",
+    "revision": "bf8b056651a2c21b8d2565580b8569da283cab23",
+    "source_onnx": "onnx/model.onnx",
+    "group": "01_bi_encoders",
+    "kind": "potion"
+  },
+  {
+    "repository": "Xenova/bge-small-en-v1.5",
+    "requested_repository": "Xenova/bge-small-en-v1.5",
+    "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+    "source_onnx": "onnx/model_int8.onnx",
+    "group": "01_bi_encoders",
+    "kind": "embedding"
+  },
+  {
+    "repository": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+    "requested_repository": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "2c4055b12046f11709e9df2c122e59ffbdc2f900",
+    "source_onnx": "onnx/model_int8.onnx",
+    "group": "01_bi_encoders",
+    "kind": "embedding"
+  },
+  {
+    "repository": "Xenova/ms-marco-TinyBERT-L-2-v2",
+    "requested_repository": "Xenova/ms-marco-TinyBERT-L-2-v2",
+    "revision": "b76bb5e1fefd66aa36cd108622d768e86c015ff1",
+    "source_onnx": "onnx/model_int8.onnx",
+    "group": "02_cross_encoders",
+    "kind": "reranker"
+  },
+  {
+    "repository": "cross-encoder/ettin-reranker-17m-v1",
+    "requested_repository": "onnx-community/ettin-reranker-17m-v1",
+    "revision": "9e4aa35321a6dd1a43ca313f500c4b4f7cfb5cc6",
+    "source_onnx": "onnx/model_qint8_arm64.onnx",
+    "group": "02_cross_encoders",
+    "kind": "ettin"
+  },
+  {
+    "repository": "Xenova/nli-deberta-v3-xsmall",
+    "requested_repository": "Xenova/nli-deberta-v3-xsmall",
+    "revision": "2a4f614a701367a02d51389039afc998faeda637",
+    "source_onnx": "onnx/model_int8.onnx",
+    "group": "02_cross_encoders",
+    "kind": "nli"
+  }
+]
