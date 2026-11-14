@@ -1,0 +1,86 @@
+[
+  {
+    "key": "gliner_small-v2.1",
+    "repository": "onnx-community/gliner_small-v2.1",
+    "requested_repository": "onnx-community/gliner_small-v2.1",
+    "revision": "8142fb00740ccea973e64b1272949ff48653df5e",
+    "group": "03_token_classifiers",
+    "kind": "gliner",
+    "source_onnx": "onnx/model_int8.onnx"
+  },
+  {
+    "key": "bert-base-NER",
+    "repository": "Xenova/bert-base-NER",
+    "requested_repository": "Xenova/bert-base-NER",
+    "revision": "8e892123e8b7c2c0c2bd1dcb598b7d244c4e53aa",
+    "group": "03_token_classifiers",
+    "kind": "ner",
+    "source_onnx": "onnx/model_int8.onnx"
+  },
+  {
+    "key": "bert-base-NER-uncased",
+    "repository": "Xenova/bert-base-NER-uncased",
+    "requested_repository": "Xenova/bert-base-NER-uncased",
+    "revision": "5e99d439d48710336764eea7b6f8ff87f2f40ae4",
+    "group": "03_token_classifiers",
+    "kind": "ner",
+    "source_onnx": "onnx/model_int8.onnx"
+  },
+  {
+    "key": "DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+    "repository": "Xenova/DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+    "requested_repository": "Xenova/DeBERTa-v3-xsmall-mnli-fever-anli-ling-binary",
+    "revision": "42dedb84d69d3a3b4ad75ce1c1475f7c9f3a8b61",
+    "group": "04_zero_shot",
+    "kind": "zero_shot",
+    "source_onnx": "onnx/model_int8.onnx"
+  },
+  {
+    "key": "distilbert-base-uncased-mnli",
+    "repository": "Xenova/distilbert-base-uncased-mnli",
+    "requested_repository": "Xenova/distilbert-base-uncased-mnli",
+    "revision": "fddd480db7392a87114a6813c6acb5ede13ff4ee",
+    "group": "04_zero_shot",
+    "kind": "zero_shot",
+    "source_onnx": "onnx/model_int8.onnx"
+  },
+  {
+    "key": "mDeBERTa-v3-base-mnli-xnli",
+    "repository": "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli",
+    "requested_repository": "Xenova/mDeBERTa-v3-base-mnli-xnli",
+    "revision": "8adb042d524ecd5c26d3e3ba0e3fbcf7e2d0864c",
+    "group": "04_zero_shot",
+    "kind": "zero_shot",
+    "source_onnx": "onnx/model_quantized.onnx"
+  },
+  {
+    "key": "answerai-colbert-small-v1",
+    "repository": "libryo-ai/answerai-colbert-small-v1",
+    "requested_repository": "libryo-ai/answerai-colbert-small-v1",
+    "revision": "5508fa690d513c6b8a0a5913d7f34f473eb48b4c",
+    "group": "05_colbert",
+    "kind": "colbert",
+    "source_onnx": "answerai_colbert_small_v1.onnx",
+    "dimension": 96
+  },
+  {
+    "key": "colbertv2.0",
+    "repository": "colbert-ir/colbertv2.0",
+    "requested_repository": "colbert-ir/colbertv2.0",
+    "revision": "c1e84128e85ef755c096a95bdb06b47793b13acf",
+    "group": "05_colbert",
+    "kind": "colbert",
+    "source_onnx": "model.onnx",
+    "dimension": 128
+  },
+  {
+    "key": "jina-colbert-v1-en",
+    "repository": "jinaai/jina-colbert-v1-en",
+    "requested_repository": "jinaai/jina-colbert-v1-en",
+    "revision": "31bb5a4d063a793f4aaaf6ecb9bf4ef1879ddf7d",
+    "group": "05_colbert",
+    "kind": "jina_colbert",
+    "source_onnx": null,
+    "dimension": 128
+  }
+]
