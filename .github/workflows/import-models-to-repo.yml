@@ -1,4 +1,4 @@
-name: Store model release inside repository
+name: Store complete models with Git LFS
 
 on:
   workflow_dispatch:
@@ -6,8 +6,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/import-models-to-repo.yml'
-      - 'scripts/repo_model_packages.py'
-      - 'tests/test_repo_model_packages.py'
+      - '.gitattributes'
+      - 'scripts/verify_repo_models.py'
+      - 'tests/test_verify_repo_models.py'
       - 'repo-model-release.lock.json'
 
 permissions:
@@ -18,24 +19,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  import-models:
+  import-complete-models:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
       contents: write
+    env:
+      GIT_LFS_SKIP_SMUDGE: '1'
     steps:
-      - name: Check out repository
+      - name: Check out tooling without old multipart model blobs
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
+          filter: blob:none
           sparse-checkout: |
             scripts
             tests
-            standalone-models
-      - name: Test offline reconstruction and download integrity
+      - name: Test complete-file verification
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
-      - name: Download pinned release packages
+      - name: Download pinned complete ZIPs
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -45,33 +48,35 @@ jobs:
           tag=$(python3 -c 'import json; print(json.load(open("repo-model-release.lock.json"))["tag"])')
           mkdir -p "$RUNNER_TEMP/model-release"
           gh release download "$tag" --pattern 'Xenova-*-standalone.zip' --dir "$RUNNER_TEMP/model-release"
-      - name: Store verified parts in Git and push each package
+          python3 scripts/verify_repo_models.py --directory "$RUNNER_TEMP/model-release"
+      - name: Replace multipart files with complete LFS files
         shell: bash
         run: |
           set -euo pipefail
+          git lfs install --local
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # ZIP bytes are already compressed; avoid expensive delta searches.
-          git config core.compression 0
-          git config pack.window 0
-          git config pack.threads 2
+          mkdir -p standalone-models
           python3 -c 'import json; print("\n".join(a["name"] for a in json.load(open("repo-model-release.lock.json"))["assets"]))' > "$RUNNER_TEMP/model-assets.txt"
           while IFS= read -r asset; do
-            python3 scripts/repo_model_packages.py stage --source "$RUNNER_TEMP/model-release" --asset "$asset"
-            folder="standalone-models/${asset%.zip}"
-            git add -- "$folder"
-            if git diff --cached --quiet; then
-              echo "Already committed: $asset"
-              continue
-            fi
-            git commit -m "Store $asset in repository as verified 48 MiB parts"
-            # Preserve intervening commits; never force-push.
-            git pull --rebase origin main
-            git push origin HEAD:main
+            mv "$RUNNER_TEMP/model-release/$asset" "standalone-models/$asset"
+            git add --sparse -- "standalone-models/$asset"
+            git rm -r --cached --sparse --ignore-unmatch -- "standalone-models/${asset%.zip}"
           done < "$RUNNER_TEMP/model-assets.txt"
-      - name: Verify all six committed model packages
-        run: python3 scripts/repo_model_packages.py verify
-      - name: Link repository model files
+          if ! git diff --cached --quiet; then
+            git commit -m 'Replace all multipart model archives with six complete Git LFS ZIPs'
+            git pull --rebase origin main
+          fi
+          python3 scripts/verify_repo_models.py --git-ref HEAD
+          git lfs fsck --objects HEAD
+          # Upload every full object before changing the remote branch.
+          git lfs push origin HEAD
+          git push origin HEAD:main
+      - name: Check published model pointer manifest
+        run: |
+          git fetch origin main
+          python3 scripts/verify_repo_models.py --git-ref origin/main
+      - name: Link complete files
         shell: bash
         run: |
-          printf '## Models stored in Git\n\nhttps://github.com/%s/tree/main/standalone-models\n\nRestore offline with `python3 scripts/repo_model_packages.py restore --extract`.\n' "$GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
+          printf '## Six complete model ZIPs\n\nhttps://github.com/%s/tree/main/standalone-models\n\nUse Git LFS to clone or pull the complete files. No part assembly is required.\n' "$GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"

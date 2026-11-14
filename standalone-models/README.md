@@ -1,34 +1,48 @@
-# Standalone model packages stored in Git
+# Complete standalone model ZIPs
 
-This directory holds the actual bytes of all six Xenova q8/FP16 model packages.
-Each package has its own directory containing `manifest.json` and ordered
-`.zip.part001`, `.zip.part002`, … files of at most 48 MiB each. These are ordinary
-Git blobs, not Git LFS pointers or links to release downloads.
+Each model/precision is one complete ZIP file, tracked with Git LFS. There are
+no parts to assemble. The Git history stores an LFS pointer; GitHub LFS holds
+the complete ZIP bytes and Git LFS downloads them to the same path when cloning.
 
-After cloning, restore and extract all models with Python 3.10+:
+| Model | q8 | FP16 |
+| --- | --- | --- |
+| BGE-M3 | [ZIP](Xenova-bge-m3-q8-standalone.zip) | [ZIP](Xenova-bge-m3-fp16-standalone.zip) |
+| E5-base-v2 | [ZIP](Xenova-e5-base-v2-q8-standalone.zip) | [ZIP](Xenova-e5-base-v2-fp16-standalone.zip) |
+| E5-large-v2 | [ZIP](Xenova-e5-large-v2-q8-standalone.zip) | [ZIP](Xenova-e5-large-v2-fp16-standalone.zip) |
 
-```sh
-python3 scripts/repo_model_packages.py restore --extract
-```
-
-For only the q8 versions:
-
-```sh
-python3 scripts/repo_model_packages.py restore --dtype q8 --extract
-```
-
-For one model, add `--model bge-m3`, `--model e5-base-v2`, or `--model e5-large-v2`.
-The script verifies every part, the complete ZIP and each extracted model file.
-ZIPs are restored into `dist/`; model files into `models/Xenova/<model>/`.
-Use `--output` and `--destination` to choose other folders. Omit `--extract`
-to restore only the ZIPs. No network access or third-party Python package is needed.
-
-The committed [release lock](../repo-model-release.lock.json) records the original
-release and exact ZIP checksums. [The import workflow](../.github/workflows/import-models-to-repo.yml)
-imports those bytes and pushes each package separately. An interrupted import can
-be rerun: it verifies and skips already committed packages. Incomplete imports
-are visible as missing model directories and make `verify`/`restore` fail.
+Install Git LFS, then:
 
 ```sh
-python3 scripts/repo_model_packages.py verify
+git lfs install
+git clone --depth 1 https://github.com/Dosa42/Embedding-models.git
+cd Embedding-models
 ```
+
+For an existing clone:
+
+```sh
+git lfs install
+git pull
+git lfs pull
+```
+
+Extract any ZIP normally. Each includes the original ONNX model, tokenizer,
+configuration, upstream model card and SHA-256 checksums. Extract into `models/`
+to create `models/Xenova/<model>/`. Both precisions may share that directory.
+A compatible inference runtime is required separately.
+
+To verify all six downloaded ZIPs with Python 3.10+:
+
+```sh
+python3 scripts/verify_repo_models.py
+```
+
+Small text files starting with `version https://git-lfs.github.com/spec/v1` are
+LFS pointers, not the model bytes: run `git lfs pull` to download the full files.
+GitHub's source ZIP may contain pointers depending on repository archive settings;
+use a Git LFS clone or the individual file's download button for complete models.
+
+[repo-model-release.lock.json](../repo-model-release.lock.json) records exact
+ZIP sizes and SHA-256 values. The import workflow verifies the complete ZIPs,
+uploads all LFS objects, then replaces the multipart paths on `main` in one commit.
+Old multipart data remains in Git history; `--depth 1` avoids that old history.

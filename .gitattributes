@@ -1,2 +1,2 @@
-# Multipart model ZIPs are binary Git objects, without text conversion or diffs.
-standalone-models/**/*.part* binary
+# Complete standalone model packages are stored through Git LFS.
+standalone-models/*.zip filter=lfs diff=lfs merge=lfs -text

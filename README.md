@@ -1,53 +1,48 @@
 # Embedding models
 
-## Xenova BGE-M3 and E5-v2 — models included in this repository
+## Xenova BGE-M3 and E5-v2 — complete q8 / FP16 files
 
-All six **q8 and FP16 model packages are stored as ordinary Git files** in
-[standalone-models/](standalone-models/). A normal clone includes their bytes;
-no release download or Git LFS is required. Each ZIP is divided into parts of
-at most 48 MiB to fit GitHub's per-file limit.
+[standalone-models/](standalone-models/) contains **six complete ZIP files**, one
+for each model and precision. They use Git LFS so files larger than GitHub's
+ordinary Git blob limit can appear as single files. No part assembly is needed.
+The Git history holds pointers; GitHub LFS stores and serves the full ZIP bytes.
+
+| Model | q8 | FP16 |
+| --- | --- | --- |
+| Xenova/bge-m3 | [ZIP](standalone-models/Xenova-bge-m3-q8-standalone.zip) | [ZIP](standalone-models/Xenova-bge-m3-fp16-standalone.zip) |
+| Xenova/e5-base-v2 | [ZIP](standalone-models/Xenova-e5-base-v2-q8-standalone.zip) | [ZIP](standalone-models/Xenova-e5-base-v2-fp16-standalone.zip) |
+| Xenova/e5-large-v2 | [ZIP](standalone-models/Xenova-e5-large-v2-q8-standalone.zip) | [ZIP](standalone-models/Xenova-e5-large-v2-fp16-standalone.zip) |
+
+Install Git LFS, then clone with full model files:
 
 ```sh
-git clone https://github.com/Dosa42/Embedding-models.git
+git lfs install
+git clone --depth 1 https://github.com/Dosa42/Embedding-models.git
 cd Embedding-models
-python3 scripts/repo_model_packages.py restore --extract
 ```
 
-This works offline after cloning and needs only Python 3.10+. It reconstructs
-six complete ZIPs in `dist/`, verifies their SHA-256 checksums and extracts the
-model files into `models/Xenova/<model>/`. Add `--dtype q8` or `--dtype fp16`
-to select a precision, and `--model bge-m3`, `--model e5-base-v2`, or
-`--model e5-large-v2` to select one model. Existing files with different contents
-are preserved and reported as errors.
+For an existing clone, run `git lfs install`, `git pull`, and `git lfs pull`.
+Extract the ZIPs normally into `models/`; each creates `Xenova/<model>/` with
+ONNX weights, tokenizer, configuration and the upstream model card. A shallow
+clone avoids downloading the old multipart model data retained in Git history.
+See [standalone-models/README.md](standalone-models/README.md) for verification.
 
-| Model | q8 weight bytes | FP16 weight bytes | Pooling |
-| --- | ---: | ---: | --- |
-| Xenova/bge-m3 | 569,694,530 | 1,133,992,936 | CLS + L2 |
-| Xenova/e5-base-v2 | 110,083,279 | 218,108,177 | Masked mean + L2 |
-| Xenova/e5-large-v2 | 336,983,104 | 668,828,712 | Masked mean + L2 |
-
-Each package includes the ONNX weights, tokenizer, configuration and upstream
-model card. Use `dtype: 'q8'` for `model_quantized.onnx` or `dtype: 'fp16'` for
+Use `dtype: 'q8'` for `model_quantized.onnx` or `dtype: 'fp16'` for
 `model_fp16.onnx`. Install a compatible inference runtime separately. E5-v2
-retrieval uses `query: ` / `passage: ` prefixes, English text and at most 512 tokens.
-BGE-M3 packages target dense embeddings. These files do not change the Android
-app's bundled model selection.
+retrieval uses `query: ` / `passage: ` prefixes, masked mean pooling, L2
+normalization, English text and at most 512 tokens. BGE-M3 dense embeddings
+use CLS pooling and L2 normalization. The Android app's model selection is unchanged.
 
 The [upstream model lock](xenova-models.lock.json) pins original model files;
-the [release lock](repo-model-release.lock.json) pins the ZIP bytes copied into
-Git. Each package directory also records checksums for every part. See
-[standalone-models/README.md](standalone-models/README.md) for offline verification.
+the [package lock](repo-model-release.lock.json) pins the complete ZIPs. Run
+`python3 scripts/verify_repo_models.py` to verify downloaded ZIP files.
+The [LFS import workflow](https://github.com/Dosa42/Embedding-models/actions/workflows/import-models-to-repo.yml)
+verifies and uploads complete files before replacing the multipart paths on `main`.
+Model integrity is checked; inference is not tested by this workflow.
 
-The [repository import workflow](https://github.com/Dosa42/Embedding-models/actions/workflows/import-models-to-repo.yml)
-imports the pinned release and commits the model bytes package by package. It
-can be rerun safely to finish an interrupted import. The original
-[release downloads](https://github.com/Dosa42/Embedding-models/releases/tag/xenova-onnx-1-1)
-remain available as an additional download option.
-
-For a fresh download from the pinned Hugging Face versions, the original
-`python3 scripts/fetch_xenova_models.py --dtype all` command also remains available.
-See `README_LOCAL.txt` inside each ZIP for local loading settings. Integrity is
-verified; inference is not tested by the import workflow.
+The original [release downloads](https://github.com/Dosa42/Embedding-models/releases/tag/xenova-onnx-1-1)
+and `python3 scripts/fetch_xenova_models.py --dtype all` remain alternative ways
+to obtain the same model packages.
 
 ## Multilingual E5 small (int8 ONNX)
 
