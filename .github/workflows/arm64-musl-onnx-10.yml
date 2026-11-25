@@ -22,7 +22,9 @@ jobs:
           mkdir -p output
           docker run --rm --platform linux/arm64 -v "$PWD/output:/out" alpine:3.22 sh -euxc '
             apk add --no-cache bash build-base cmake ninja git python3 py3-pip curl unzip linux-headers
-            git clone --depth 1 --branch v1.22.2 https://github.com/microsoft/onnxruntime.git /tmp/ort
+            curl -fL --retry 3 https://github.com/microsoft/onnxruntime/archive/refs/tags/v1.22.2.tar.gz -o /tmp/ort.tar.gz
+            mkdir -p /tmp/ort
+            tar -xzf /tmp/ort.tar.gz -C /tmp/ort --strip-components=1
             cd /tmp/ort
             ./build.sh --config Release --build_shared_lib --parallel 2 --skip_tests --cmake_generator Ninja --build_dir /tmp/ort-build
             mkdir -p /out/runtime
