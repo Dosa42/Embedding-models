@@ -1,0 +1,67 @@
+name: ARM64 musl ONNX starter (10 small models)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          sparse-checkout: |
+            .github
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Build native ARM64 musl runtime and fetch model snapshots
+        run: |
+          mkdir -p output
+          docker run --rm --platform linux/arm64 -v "$PWD/output:/out" alpine:3.22 sh -euxc '
+            apk add --no-cache bash build-base cmake ninja git python3 py3-pip curl unzip linux-headers
+            git clone --depth 1 --branch v1.22.2 https://github.com/microsoft/onnxruntime.git /tmp/ort
+            cd /tmp/ort
+            ./build.sh --config Release --build_shared_lib --parallel 2 --skip_tests --cmake_generator Ninja --build_dir /tmp/ort-build
+            mkdir -p /out/runtime
+            find /tmp/ort-build -name "libonnxruntime.so*" -type f -exec cp {} /out/runtime/ \;
+            test -n "$(find /out/runtime -name "libonnxruntime.so*" -print -quit)"
+          '
+      - name: Download ten compact ONNX model repositories
+        env:
+          HF_HUB_DISABLE_XET: "1"
+        run: |
+          python -m pip install --user 'huggingface_hub>=0.25,<1'
+          python - <<'PY'
+          from huggingface_hub import snapshot_download
+          from pathlib import Path
+          models = [
+              "Xenova/all-MiniLM-L6-v2",
+              "Xenova/all-MiniLM-L12-v2",
+              "Xenova/paraphrase-MiniLM-L3-v2",
+              "Xenova/paraphrase-MiniLM-L6-v2",
+              "Xenova/multi-qa-MiniLM-L6-cos-v1",
+              "Xenova/multilingual-e5-small",
+              "Xenova/bge-small-en-v1.5",
+              "Xenova/e5-small-v2",
+              "Xenova/ms-marco-MiniLM-L-2-v2",
+              "Xenova/ms-marco-MiniLM-L-6-v2",
+          ]
+          for index, repo in enumerate(models, 1):
+              dest = Path("output/models") / f"{index:02d}-{repo.split('/')[-1]}"
+              snapshot_download(repo_id=repo, local_dir=str(dest),
+                                allow_patterns=["*.json","*.txt","*.onnx","*.model","*.md"],
+                                ignore_patterns=["*fp16*","*q4*","*q8*","*uint8*","*int8*"])
+              assert list(dest.rglob("*.onnx")), f"No ONNX weights: {repo}"
+          PY
+      - name: Package
+        run: |
+          printf '%s\n' 'ARM64 musl CPU runtime plus ONNX model snapshots.' 'Tokenizer, pooling, and inference application are not included.' > output/README.txt
+          tar -C output -czf arm64-musl-onnx-10-models.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arm64-musl-onnx-10-models
+          path: arm64-musl-onnx-10-models.tar.gz
+          retention-days: 7
